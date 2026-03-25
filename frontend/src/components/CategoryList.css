@@ -1,0 +1,91 @@
+.category-list-container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.items-panel {
+  padding: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.panel-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.add-btn {
+  background-color: #667eea;
+  color: white;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.item-form {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.item-form button {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.items-list {
+  display: grid;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item-card {
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.item-card:hover {
+  border-color: #667eea;
+  background: #f9f9f9;
+}
+
+.item-card.active {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.item-card h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.item-card p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  padding: 20px;
+}
