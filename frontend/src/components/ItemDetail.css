@@ -90,6 +90,50 @@
   padding: 10px 20px;
 }
 
+.contact-section {
+  background: white;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.contact-section h4 {
+  margin: 0 0 15px 0;
+  color: #667eea;
+  font-size: 0.95rem;
+}
+
+.edit-form .contact-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.edit-form .contact-section h4 {
+  grid-column: 1 / -1;
+}
+
+.edit-form .contact-section .form-group {
+  margin: 0;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contact-details p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.contact-details strong {
+  color: #333;
+}
+
 .detail-info {
   margin-bottom: 30px;
 }

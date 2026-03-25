@@ -6,14 +6,25 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    contact_info: '',
+    contact_name: '',
+    contact_phone: '',
+    contact_address: '',
+    contact_email: '',
     reference_number: ''
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onCreateItem(formData);
-    setFormData({ title: '', description: '', contact_info: '', reference_number: '' });
+    setFormData({ 
+      title: '', 
+      description: '', 
+      contact_name: '',
+      contact_phone: '',
+      contact_address: '',
+      contact_email: '',
+      reference_number: '' 
+    });
     setShowForm(false);
   };
 
@@ -29,7 +40,7 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
           <form onSubmit={handleSubmit} className="item-form">
             <input
               type="text"
-              placeholder="Title"
+              placeholder="Title *"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               required
@@ -39,12 +50,35 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
-            <input
-              type="text"
-              placeholder="Contact Info"
-              value={formData.contact_info}
-              onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
-            />
+            
+            <div className="contact-section">
+              <h4>Contact Information (optional)</h4>
+              <input
+                type="text"
+                placeholder="Name"
+                value={formData.contact_name}
+                onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={formData.contact_phone}
+                onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Address"
+                value={formData.contact_address}
+                onChange={(e) => setFormData({ ...formData, contact_address: e.target.value })}
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={formData.contact_email}
+                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+              />
+            </div>
+            
             <input
               type="text"
               placeholder="Reference Number"
@@ -62,16 +96,24 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
           ) : items.length === 0 ? (
             <p className="empty">No items yet. Add one to get started!</p>
           ) : (
-            items.map(item => (
-              <div
-                key={item.id}
-                className={`item-card ${selectedItem?.id === item.id ? 'active' : ''}`}
-                onClick={() => onSelectItem(item)}
-              >
-                <h4>{item.title}</h4>
-                <p>{item.contact_info}</p>
-              </div>
-            ))
+            items.map(item => {
+              const contactDetails = [
+                item.contact_name,
+                item.contact_phone,
+                item.contact_email
+              ].filter(Boolean).join(' • ');
+              
+              return (
+                <div
+                  key={item.id}
+                  className={`item-card ${selectedItem?.id === item.id ? 'active' : ''}`}
+                  onClick={() => onSelectItem(item)}
+                >
+                  <h4>{item.title}</h4>
+                  <p>{contactDetails || 'No contact info'}</p>
+                </div>
+              );
+            })
           )}
         </div>
       </div>

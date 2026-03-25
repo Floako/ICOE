@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './ItemDetail.css';
 
 function ItemDetail({ item, token, onUpdate, onDelete }) {
@@ -7,11 +7,7 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    fetchFiles();
-  }, [item.id]);
-
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     try {
       const response = await fetch(`/api/items/${item.id}/files`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -21,7 +17,11 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
     } catch (err) {
       console.error('Failed to load files');
     }
-  };
+  }, [item.id, token]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
 
   const handleUpdate = () => {
     onUpdate(item.id, formData);
@@ -100,14 +100,43 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
-          <div className="form-group">
-            <label>Contact Info</label>
-            <input
-              type="text"
-              value={formData.contact_info || ''}
-              onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
-            />
+          
+          <div className="contact-section">
+            <h4>Contact Information (optional)</h4>
+            <div className="form-group">
+              <label>Name</label>
+              <input
+                type="text"
+                value={formData.contact_name || ''}
+                onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>Phone Number</label>
+              <input
+                type="tel"
+                value={formData.contact_phone || ''}
+                onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>Address</label>
+              <input
+                type="text"
+                value={formData.contact_address || ''}
+                onChange={(e) => setFormData({ ...formData, contact_address: e.target.value })}
+              />
+            </div>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                value={formData.contact_email || ''}
+                onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+              />
+            </div>
           </div>
+          
           <div className="form-group">
             <label>Reference Number</label>
             <input
@@ -129,12 +158,19 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
               <p>{formData.description}</p>
             </div>
           )}
-          {formData.contact_info && (
+          
+          {(formData.contact_name || formData.contact_phone || formData.contact_address || formData.contact_email) && (
             <div className="info-item">
-              <strong>Contact Info:</strong>
-              <p>{formData.contact_info}</p>
+              <strong>Contact Information:</strong>
+              <div className="contact-details">
+                {formData.contact_name && <p><strong>Name:</strong> {formData.contact_name}</p>}
+                {formData.contact_phone && <p><strong>Phone:</strong> {formData.contact_phone}</p>}
+                {formData.contact_address && <p><strong>Address:</strong> {formData.contact_address}</p>}
+                {formData.contact_email && <p><strong>Email:</strong> {formData.contact_email}</p>}
+              </div>
             </div>
           )}
+          
           {formData.reference_number && (
             <div className="info-item">
               <strong>Reference:</strong>

@@ -43,6 +43,34 @@
   resize: vertical;
 }
 
+.contact-section {
+  background: white;
+  padding: 12px;
+  border-radius: 4px;
+  margin: 5px 0;
+  border-left: 3px solid #667eea;
+}
+
+.contact-section h4 {
+  margin: 0 0 12px 0;
+  color: #667eea;
+  font-size: 0.95rem;
+}
+
+.contact-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.contact-section input {
+  grid-column: span 1;
+}
+
+.contact-section h4 {
+  grid-column: 1 / -1;
+}
+
 .item-form button {
   padding: 8px 16px;
   font-size: 0.9rem;

@@ -1,0 +1,183 @@
+.manage-access {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.manage-access h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.manage-access .subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.access-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.access-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.access-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+}
+
+.access-card.invited {
+  background: #fffbf0;
+  border-color: #ffd699;
+}
+
+.access-info {
+  flex: 1;
+}
+
+.access-info .username {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.access-info .email {
+  color: #666;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.type-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.type-badge.invited {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.expiry {
+  color: #ff6b6b;
+  font-weight: 500;
+}
+
+.date {
+  color: #999;
+  font-size: 11px;
+  margin-top: 3px;
+}
+
+.remove-btn {
+  padding: 8px 14px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+.remove-btn:hover {
+  background: #ee5a52;
+}
+
+.remove-btn:active {
+  transform: scale(0.98);
+}
+
+.remove-btn.invited {
+  background: #ffa500;
+}
+
+.remove-btn.invited:hover {
+  background: #ff8c00;
+}
+
+.no-access {
+  padding: 30px;
+  text-align: center;
+  color: #999;
+  background: white;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+}
+
+.no-access p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.no-sharers {
+  padding: 30px;
+  text-align: center;
+  color: #999;
+  background: white;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+}
+
+.no-sharers p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border-left: 4px solid #c33;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.success-message {
+  background: #efe;
+  color: #3c3;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border-left: 4px solid #3c3;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.loading {
+  color: #666;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px;
+}

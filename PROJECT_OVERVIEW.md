@@ -10,7 +10,7 @@ ICOE is an **In Case of Emergency** application designed for families and close 
 - **HEALTH**: Doctor details, Carer information  
 - **FINANCE**: Bank accounts, Pensions, Loans, ISAs, Mortgages
 - **SERVICES**: Utilities, Energy, Telecoms
-- **INSURANCE**: Car, House, Personal, Warranties
+- **INSURANCE/ASSURANCE**: Car, House, Personal, Warranties, Guarantees, Life insurance, Policy references
 - **MEMBERSHIPS**: Subscriptions, Memberships, References
 
 ### Key Features

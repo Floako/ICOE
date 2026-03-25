@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import CategoryList from './CategoryList';
 import ItemDetail from './ItemDetail';
+import ShareData from './ShareData';
+import ManageAccess from './ManageAccess';
+import SharedWithMe from './SharedWithMe';
+import PendingInvites from './PendingInvites';
 
 const CATEGORIES = [
   'LEGAL',
@@ -19,10 +23,7 @@ function Dashboard({ user, token, onLogout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
+  const [currentView, setCurrentView] = useState('my-data'); // my-data, share, manage, pending-invites, shared-with-me
 
   const fetchCategories = async () => {
     try {
@@ -35,6 +36,11 @@ function Dashboard({ user, token, onLogout }) {
       setError('Failed to load categories');
     }
   };
+
+  useEffect(() => {
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const createCategory = async (categoryName) => {
     try {
@@ -145,6 +151,7 @@ function Dashboard({ user, token, onLogout }) {
                     category = { category_name: cat, id: Date.now() };
                   }
                   selectCategory(category);
+                  setCurrentView('my-data');
                 }}
               >
                 {cat}
@@ -154,29 +161,72 @@ function Dashboard({ user, token, onLogout }) {
         </aside>
 
         <main className="main-content">
-          {!selectedCategory ? (
-            <div className="welcome-message">
-              <h2>Welcome to ICOE</h2>
-              <p>Select a category to get started</p>
-            </div>
-          ) : (
-            <div>
-              <CategoryList
-                items={items}
-                selectedItem={selectedItem}
-                onSelectItem={setSelectedItem}
-                onCreateItem={createItem}
-                loading={loading}
-              />
-              {selectedItem && (
-                <ItemDetail
-                  item={selectedItem}
-                  token={token}
-                  onUpdate={updateItem}
-                  onDelete={deleteItem}
+          <div className="tabs">
+            <button
+              className={`tab-btn ${currentView === 'my-data' ? 'active' : ''}`}
+              onClick={() => setCurrentView('my-data')}
+            >
+              My Data
+            </button>
+            <button
+              className={`tab-btn ${currentView === 'share' ? 'active' : ''}`}
+              onClick={() => setCurrentView('share')}
+            >
+              Share Data
+            </button>
+            <button
+              className={`tab-btn ${currentView === 'manage' ? 'active' : ''}`}
+              onClick={() => setCurrentView('manage')}
+            >
+              Manage Access
+            </button>
+            <button
+              className={`tab-btn ${currentView === 'pending-invites' ? 'active' : ''}`}
+              onClick={() => setCurrentView('pending-invites')}
+            >
+              Pending Invites
+            </button>
+            <button
+              className={`tab-btn ${currentView === 'shared-with-me' ? 'active' : ''}`}
+              onClick={() => setCurrentView('shared-with-me')}
+            >
+              Shared With Me
+            </button>
+          </div>
+
+          {currentView === 'my-data' ? (
+            !selectedCategory ? (
+              <div className="welcome-message">
+                <h2>Welcome to ICOE</h2>
+                <p>Select a category on the left to get started</p>
+              </div>
+            ) : (
+              <div>
+                <CategoryList
+                  items={items}
+                  selectedItem={selectedItem}
+                  onSelectItem={setSelectedItem}
+                  onCreateItem={createItem}
+                  loading={loading}
                 />
-              )}
-            </div>
+                {selectedItem && (
+                  <ItemDetail
+                    item={selectedItem}
+                    token={token}
+                    onUpdate={updateItem}
+                    onDelete={deleteItem}
+                  />
+                )}
+              currentView === 'pending-invites' ? (
+            <PendingInvites />
+          ) : </div>
+            )
+          ) : currentView === 'share' ? (
+            <ShareData />
+          ) : currentView === 'manage' ? (
+            <ManageAccess />
+          ) : (
+            <SharedWithMe />
           )}
         </main>
       </div>

@@ -160,6 +160,10 @@ DEVELOPING
 ### "How do I debug an issue?"
 → [07-DEVELOPER-GUIDE.md](07-DEVELOPER-GUIDE.md) - Debugging Tips section
 
+### "How do I set up email for invitations?"
+→ [EMAIL-SETUP.md](EMAIL-SETUP.md) - Complete email configuration guide
+→ [INVITATION-SYSTEM-GUIDE.md](INVITATION-SYSTEM-GUIDE.md) - How invitations work
+
 ### "How do I deploy this?"
 → [06-BACKEND-IMPLEMENTATION.md](06-BACKEND-IMPLEMENTATION.md) - Deployment Checklist
 → [01-ARCHITECTURE.md](01-ARCHITECTURE.md) - Deployment Architecture section
@@ -181,13 +185,14 @@ DEVELOPING
 ✓ CRUD operations
 ✓ File uploads
 ✓ Local storage
+✓ Data sharing system
+✓ Invitation system
+✓ Email notifications
 
 ### Phase 2 (Plan)
-- [ ] User sharing
-- [ ] Permissions system
-- [ ] Email notifications
 - [ ] Cloud storage
 - [ ] Data export
+- [ ] Advanced filtering
 
 ### Phase 3 (Vision)
 - [ ] Mobile apps
@@ -211,7 +216,11 @@ docs/
 ├── 05-USER-FLOWS.md               (User workflows)
 ├── 06-BACKEND-IMPLEMENTATION.md   (Server code)
 ├── 07-DEVELOPER-GUIDE.md          (Dev tasks)
-└── 08-DOCUMENTATION-INDEX.md      (This file)
+├── 08-DOCUMENTATION-INDEX.md      (This file)
+├── EMAIL-SETUP.md                 (Email configuration)
+├── SHARING-SYSTEM-GUIDE.md        (Data sharing feature)
+├── INVITATION-SYSTEM-GUIDE.md     (Invitation system)
+└── README.md                       (General info)
 ```
 
 ---
