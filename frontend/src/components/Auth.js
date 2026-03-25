@@ -98,7 +98,7 @@ function Auth({ onLoginSuccess, initialMode }) {
           <button 
             type="button" 
             className="toggle-btn"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => { setIsLogin(!isLogin); setError(''); }}
           >
             {isLogin ? 'Register' : 'Log In'}
           </button>

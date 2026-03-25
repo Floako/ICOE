@@ -238,7 +238,15 @@ app.post('/api/auth/login', async (req, res) => {
 // Get all categories for user
 app.get('/api/categories', authenticateToken, async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM categories WHERE user_id = $1', [req.user.id]);
+    const result = await db.query(
+      `SELECT c.*, CAST(COUNT(i.id) AS INTEGER) AS item_count
+       FROM categories c
+       LEFT JOIN items i ON i.category_id = c.id
+       WHERE c.user_id = $1
+       GROUP BY c.id
+       ORDER BY c.category_name`,
+      [req.user.id]
+    );
     res.json(result.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -252,6 +260,21 @@ app.post('/api/categories', authenticateToken, async (req, res) => {
       [req.user.id, category_name]
     );
     res.status(201).json({ id: result.rows[0].id, category_name, user_id: req.user.id });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Get ALL items across all categories for the logged-in user (with category name)
+app.get('/api/items/all', authenticateToken, async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT i.*, c.category_name
+       FROM items i
+       JOIN categories c ON i.category_id = c.id
+       WHERE i.user_id = $1
+       ORDER BY i.created_at DESC`,
+      [req.user.id]
+    );
+    res.json(result.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
