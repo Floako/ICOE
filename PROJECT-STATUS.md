@@ -1,5 +1,5 @@
 # ICOE — Project Status & Continuation Prompt
-*Last updated: 25 March 2026*
+*Last updated: 26 March 2026*
 
 ---
 
@@ -9,7 +9,7 @@
 I am continuing development of ICOE (In Case of Emergency) — a React + Node.js web app 
 that lets users securely store and share emergency information with trusted contacts.
 
-Here is the full project status as of 25 March 2026:
+Here is the full project status as of 26 March 2026:
 
 ## What ICOE is
 A personal emergency information vault. Users store critical records (legal, health, 
@@ -89,7 +89,7 @@ FRONTEND_URL=http://localhost:3000
 - categories (id, user_id, category_name, created_at)
 - items (id, category_id, user_id, title, item_type, priority, description,
          contact_name, contact_phone, contact_address, contact_email,
-         reference_number, created_at, updated_at)
+         reference_number, start_date, expiry_date, created_at, updated_at)
 - files (id, item_id, filename, original_filename, filepath, created_at)
 - invitations (id, owner_id, invited_email, token, status, expires_at, created_at)
 - shared_access (id, owner_id, viewer_id, permissions, created_at)
@@ -127,6 +127,8 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - description
 - contact_name, contact_phone, contact_email, contact_address
 - reference_number
+- start_date (optional DATE, for future AI scanning)
+- expiry_date (optional DATE, for future AI scanning)
 
 ## Features Completed
 - Welcome landing page with ICOE branding and feature cards
@@ -141,22 +143,39 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - Sharing system (invite by email, manage access, shared-with-me view)
 - Pending invites tab
 - All data stored in Supabase PostgreSQL
+- File attachments: multi-file picker on Add Record form, files uploaded after record creation
+- File viewing: files served directly from backend (http://localhost:5000/uploads/...) — links open in new tab
+- Start Date + Expiry/Renewal Date fields on Add Record form and Item Detail view/edit
+- Auth form clears on logout, mode switch, and mount (prevents stale data showing)
+- Logout resets URL params and auth mode
 
 ## Known Issues / Pending Work
-- [ ] ItemDetail.js — view/edit/delete a selected record (wired but not confirmed working end-to-end)
-- [ ] ShareData.js, ManageAccess.js, SharedWithMe.js, PendingInvites.js — backend routes exist but UI components need review
-- [ ] File upload UI — backend multer route exists, no frontend upload button yet
+- [ ] File viewing: backend must be running for links to work (expected for local dev)
+- [ ] Browser autofill (F5 refresh) may still repopulate auth form — autocomplete attributes not yet applied
+- [ ] ShareData.js, ManageAccess.js, SharedWithMe.js, PendingInvites.js — backend routes exist but UI components need end-to-end review
 - [ ] Deployment to Railway or Render (not yet done)
 - [ ] No password reset / forgot password flow yet
 - [ ] Mobile responsive layout not fully tested
+- [ ] JWT_SECRET still hardcoded in server.js — must move to .env before going live
+
+## Important Technical Notes for Next Agent
+- File URLs: backend GET /api/items/:id/files now rebuilds URL from filename on the fly
+  (url: `http://localhost:5000/uploads/${filename}`) — so old DB records with null url still work
+- start_date and expiry_date columns added via ALTER TABLE IF NOT EXISTS on server startup
+  — existing DB will get them automatically on next backend restart
+- Backend must be started from inside the backend/ folder:
+    cd C:\Users\pheal\code\MBB1\MBB\backend
+    node server.js
+  (NOT from the workspace root — .env won't load)
+- Last GitHub push: commit d124301 on 26 March 2026
 
 ## Next Session Priority Tasks
-1. Test and fix the sharing flow end-to-end (invite → accept → view shared data)
-2. Add file attachment upload button to ItemDetail
-3. Deploy to Railway (backend) + Netlify or Railway (frontend)
-4. Set production environment variables on Railway
-5. Mobile responsive pass on sidebar and forms
-6. Consider adding: Emergency Contacts as a dedicated feature/category
+1. Test file upload + viewing end-to-end (upload image to record, click link, confirm opens)
+2. Test Start Date / Expiry Date fields (add record with dates, view detail, edit and save)
+3. Fix browser autofill on auth form (add autoComplete="off" / "new-password" to inputs)
+4. Review sharing flow end-to-end (invite → accept → view shared data)
+5. Deploy to Railway (backend) + Netlify or Railway (frontend)
+6. Set production environment variables on Railway (DATABASE_URL, JWT_SECRET, BACKEND_URL, FRONTEND_URL)
 
 ## Notes
 - .env is in .gitignore — never committed
@@ -164,6 +183,8 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
   appended when the Supabase password was originally set
 - Old SQLite database was abandoned — Supabase is the only DB now
 - sqlite3 package is still in package.json but not used
-- JWT_SECRET is currently hardcoded in server.js as 'your-secret-key-change-in-production'
+- JWT_SECRET is currently hardcoded in server.js as 'change-this-before-production'
   — must be moved to .env before going live
+- BACKEND_URL env var is read in server.js for file URLs (defaults to http://localhost:5000)
+  — set this to production URL on Railway when deploying
 ```
