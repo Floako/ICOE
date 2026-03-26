@@ -101,7 +101,7 @@ function Dashboard({ user, token, onLogout }) {
   };
 
   /* ── Item CRUD ──────────────────────────────────────── */
-  const createItem = async (itemData) => {
+  const createItem = async (itemData, files = []) => {
     try {
       const res  = await fetch(`/api/categories/${selectedCategory.id}/items`, {
         method:  'POST',
@@ -112,6 +112,24 @@ function Dashboard({ user, token, onLogout }) {
       const newItem = { id: data.id, ...itemData };
       setItems(prev => [...prev, newItem]);
       setSelectedItem(newItem);
+
+      // Upload files if provided
+      if (files.length > 0) {
+        for (const file of files) {
+          const uploadFormData = new FormData();
+          uploadFormData.append('file', file);
+          try {
+            await fetch(`/api/items/${data.id}/upload`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` },
+              body: uploadFormData
+            });
+          } catch (uploadErr) {
+            console.error(`Failed to upload file: ${file.name}`);
+          }
+        }
+      }
+
       fetchAllItems();
     } catch (_) {
       setError('Failed to create item');

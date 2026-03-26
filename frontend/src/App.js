@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
@@ -7,8 +7,36 @@ import Welcome from './components/Welcome';
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null);
-  const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('token'));
-  const [authMode, setAuthMode] = useState('login');
+
+  // Parse invitation link: /register?invited_email=someone@example.com
+  const urlParams = new URLSearchParams(window.location.search);
+  const invitedEmail = urlParams.get('invited_email') || '';
+  const initialMode = invitedEmail ? 'register' : 'login';
+
+  const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('token') && !invitedEmail);
+  const [authMode, setAuthMode] = useState(initialMode);
+
+  // Clear session data on app mount if no token
+  useEffect(() => {
+    if (!token) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!invitedEmail) {
+      return;
+    }
+
+    // Invitation links must open the auth flow, not the current signed-in session.
+    setToken(null);
+    setUser(null);
+    setShowWelcome(false);
+    setAuthMode('register');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }, [invitedEmail]);
 
   const handleLoginSuccess = (token, user) => {
     setToken(token);
@@ -22,6 +50,17 @@ function App() {
     setToken(null);
     setUser(null);
     setShowWelcome(true);
+    setAuthMode('login');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  };
+
+  const handleClearSavedSession = () => {
+    setToken(null);
+    setUser(null);
+    setShowWelcome(false);
+    setAuthMode(invitedEmail ? 'register' : 'login');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
@@ -38,7 +77,12 @@ function App() {
   return (
     <div className="App">
       {!token ? (
-        <Auth onLoginSuccess={handleLoginSuccess} initialMode={authMode} />
+        <Auth
+          onLoginSuccess={handleLoginSuccess}
+          onClearSavedSession={handleClearSavedSession}
+          initialMode={authMode}
+          invitedEmail={invitedEmail}
+        />
       ) : (
         <Dashboard user={user} token={token} onLogout={handleLogout} />
       )}

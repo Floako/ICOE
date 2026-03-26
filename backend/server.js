@@ -11,13 +11,11 @@ require('dotenv').config();
 
 const app = express();
 const PORT = 5000;
-const JWT_SECRET = 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || 'change-this-before-production';
 
-// Email configuration - Update with your email settings
-// For testing: use ethereal.email or mailtrap.io
-// For production: use Gmail, SendGrid, AWS SES, etc.
+// Email configuration
 const emailConfig = {
-  host: process.env.EMAIL_HOST || 'smtp.mailtrap.io',
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
   port: process.env.EMAIL_PORT || 587,
   secure: process.env.EMAIL_SECURE === 'true' || false,
   auth: {
@@ -26,13 +24,15 @@ const emailConfig = {
   }
 };
 
+const EMAIL_FROM = process.env.EMAIL_FROM || emailConfig.auth.user || 'noreply@icoe.app';
+
 const emailTransporter = nodemailer.createTransport(emailConfig);
 
 // Function to send invitation email
 async function sendInvitationEmail(invitedEmail, ownerUsername, invitationLink) {
   try {
     const mailOptions = {
-      from: emailConfig.auth.user || 'noreply@icoe.app',
+      from: EMAIL_FROM,
       to: invitedEmail,
       subject: `${ownerUsername} invited you to ICOE - In Case Of Emergency`,
       html: `
@@ -81,15 +81,31 @@ const db = {
 };
 
 // File upload setup
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'uploads'));
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    cb(null, Date.now() + '-' + file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_'));
   }
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('File type not allowed. Accepted: images, PDF, Word documents.'));
+    }
+  }
+});
 
 // Initialize database tables
 async function initializeDatabase() {
@@ -116,16 +132,25 @@ async function initializeDatabase() {
       category_id INTEGER REFERENCES categories(id),
       user_id INTEGER REFERENCES users(id),
       title TEXT,
+      item_type TEXT DEFAULT 'document',
+      priority TEXT DEFAULT 'normal',
       description TEXT,
       contact_name TEXT,
       contact_phone TEXT,
       contact_address TEXT,
       contact_email TEXT,
       reference_number TEXT,
+      start_date DATE,
+      expiry_date DATE,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  // Add columns if they don't exist (for databases created before these fields were added)
+  await db.query(`ALTER TABLE items ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'document'`);
+  await db.query(`ALTER TABLE items ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'normal'`);
+  await db.query(`ALTER TABLE items ADD COLUMN IF NOT EXISTS start_date DATE`);
+  await db.query(`ALTER TABLE items ADD COLUMN IF NOT EXISTS expiry_date DATE`);
   await db.query(`
     CREATE TABLE IF NOT EXISTS files (
       id SERIAL PRIMARY KEY,
@@ -228,7 +253,7 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, username: user.username } });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -291,11 +316,15 @@ app.get('/api/categories/:categoryId/items', authenticateToken, async (req, res)
 
 // Create item
 app.post('/api/categories/:categoryId/items', authenticateToken, async (req, res) => {
-  const { title, description, contact_name, contact_phone, contact_address, contact_email, reference_number } = req.body;
+  const { title, item_type, priority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date, expiry_date } = req.body;
+  const validTypes = ['document', 'contact', 'account', 'policy'];
+  const validPriorities = ['normal', 'important', 'critical'];
+  const safeType = validTypes.includes(item_type) ? item_type : 'document';
+  const safePriority = validPriorities.includes(priority) ? priority : 'normal';
   try {
     const result = await db.query(
-      'INSERT INTO items (category_id, user_id, title, description, contact_name, contact_phone, contact_address, contact_email, reference_number) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id',
-      [req.params.categoryId, req.user.id, title, description, contact_name, contact_phone, contact_address, contact_email, reference_number]
+      'INSERT INTO items (category_id, user_id, title, item_type, priority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date, expiry_date) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id',
+      [req.params.categoryId, req.user.id, title, safeType, safePriority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date || null, expiry_date || null]
     );
     res.status(201).json({ id: result.rows[0].id });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -303,11 +332,15 @@ app.post('/api/categories/:categoryId/items', authenticateToken, async (req, res
 
 // Update item
 app.put('/api/items/:itemId', authenticateToken, async (req, res) => {
-  const { title, description, contact_name, contact_phone, contact_address, contact_email, reference_number } = req.body;
+  const { title, item_type, priority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date, expiry_date } = req.body;
+  const validTypes = ['document', 'contact', 'account', 'policy'];
+  const validPriorities = ['normal', 'important', 'critical'];
+  const safeType = validTypes.includes(item_type) ? item_type : 'document';
+  const safePriority = validPriorities.includes(priority) ? priority : 'normal';
   try {
     await db.query(
-      'UPDATE items SET title=$1, description=$2, contact_name=$3, contact_phone=$4, contact_address=$5, contact_email=$6, reference_number=$7, updated_at=NOW() WHERE id=$8 AND user_id=$9',
-      [title, description, contact_name, contact_phone, contact_address, contact_email, reference_number, req.params.itemId, req.user.id]
+      'UPDATE items SET title=$1, item_type=$2, priority=$3, description=$4, contact_name=$5, contact_phone=$6, contact_address=$7, contact_email=$8, reference_number=$9, start_date=$10, expiry_date=$11, updated_at=NOW() WHERE id=$12 AND user_id=$13',
+      [title, safeType, safePriority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date || null, expiry_date || null, req.params.itemId, req.user.id]
     );
     res.json({ message: 'Item updated' });
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -322,22 +355,28 @@ app.delete('/api/items/:itemId', authenticateToken, async (req, res) => {
 });
 
 // Upload file
-app.post('/api/items/:itemId/upload', authenticateToken, upload.single('file'), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  try {
-    const result = await db.query(
-      'INSERT INTO files (item_id, filename, original_filename, filepath) VALUES ($1,$2,$3,$4) RETURNING id',
-      [req.params.itemId, req.file.filename, req.file.originalname, req.file.path]
-    );
-    res.status(201).json({ id: result.rows[0].id, filename: req.file.filename, original_filename: req.file.originalname, url: `/uploads/${req.file.filename}` });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+app.post('/api/items/:itemId/upload', authenticateToken, (req, res) => {
+  upload.single('file')(req, res, async (err) => {
+    if (err) return res.status(400).json({ error: err.message });
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    try {
+      const result = await db.query(
+        'INSERT INTO files (item_id, filename, original_filename, filepath) VALUES ($1,$2,$3,$4) RETURNING id',
+        [req.params.itemId, req.file.filename, req.file.originalname, req.file.path]
+      );
+      const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+      res.status(201).json({ id: result.rows[0].id, filename: req.file.filename, original_filename: req.file.originalname, url: `${backendUrl}/uploads/${req.file.filename}` });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+  });
 });
 
 // Get files for item
 app.get('/api/items/:itemId/files', authenticateToken, async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM files WHERE item_id=$1', [req.params.itemId]);
-    res.json(result.rows);
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const rows = result.rows.map(f => ({ ...f, url: `${backendUrl}/uploads/${f.filename}` }));
+    res.json(rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -460,6 +499,10 @@ app.post('/api/invite', authenticateToken, async (req, res) => {
   if (!invited_email) return res.status(400).json({ error: 'Missing invited_email' });
 
   try {
+    const ownerResult = await db.query('SELECT username, email FROM users WHERE id=$1', [owner_id]);
+    const owner = ownerResult.rows[0];
+    const ownerDisplayName = owner?.username || owner?.email || 'Someone';
+
     const existing = await db.query('SELECT id FROM users WHERE email=$1', [invited_email]);
     if (existing.rows[0]) return res.status(400).json({ error: 'User already registered - use Share Data instead' });
 
@@ -469,7 +512,7 @@ app.post('/api/invite', authenticateToken, async (req, res) => {
       [owner_id, invited_email, 'pending', expiresAt]
     );
     const invitationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?invited_email=${encodeURIComponent(invited_email)}`;
-    await sendInvitationEmail(invited_email, req.user.username, invitationLink);
+    await sendInvitationEmail(invited_email, ownerDisplayName, invitationLink);
     res.status(201).json({ message: 'Invitation sent', invited_email, expires_at: expiresAt });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

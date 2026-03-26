@@ -138,6 +138,60 @@
   margin-bottom: 30px;
 }
 
+.info-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.badge-type,
+.badge-priority {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1.5px solid #ccc;
+  background: #f4f4f4;
+  color: #555;
+}
+
+.badge-priority {
+  border-width: 1.5px;
+}
+
+.edit-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edit-radio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #ddd;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  background: white;
+  color: #555;
+}
+
+.edit-radio-pill input[type="radio"] {
+  display: none;
+}
+
+.edit-radio-pill.selected {
+  border-color: #667eea;
+  color: #667eea;
+  background: #667eea18;
+}
+
 .info-item {
   margin-bottom: 20px;
   padding: 15px;

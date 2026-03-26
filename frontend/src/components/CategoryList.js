@@ -24,6 +24,8 @@ const EMPTY_FORM = {
   contact_address: '',
   contact_email: '',
   reference_number: '',
+  start_date: '',
+  expiry_date: '',
 };
 
 const PRIORITY_BADGE = { normal: '🟢', important: '🟡', critical: '🔴' };
@@ -32,18 +34,29 @@ const TYPE_BADGE     = { document: '📄', contact: '👤', account: '🏦', pol
 function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading }) {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const set = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
+  const handleFileSelect = (e) => {
+    setSelectedFiles(Array.from(e.target.files || []));
+  };
+
+  const removeFile = (index) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onCreateItem(formData);
+    onCreateItem(formData, selectedFiles);
     setFormData(EMPTY_FORM);
+    setSelectedFiles([]);
     setShowForm(false);
   };
 
   const handleCancel = () => {
     setFormData(EMPTY_FORM);
+    setSelectedFiles([]);
     setShowForm(false);
   };
 
@@ -182,6 +195,24 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
                     onChange={(e) => set('reference_number', e.target.value)}
                   />
                 </div>
+                <div className="field-group">
+                  <label className="field-label">Start Date <em>(optional)</em></label>
+                  <input
+                    type="date"
+                    className="field-input"
+                    value={formData.start_date}
+                    onChange={(e) => set('start_date', e.target.value)}
+                  />
+                </div>
+                <div className="field-group">
+                  <label className="field-label">Expiry / Renewal Date <em>(optional)</em></label>
+                  <input
+                    type="date"
+                    className="field-input"
+                    value={formData.expiry_date}
+                    onChange={(e) => set('expiry_date', e.target.value)}
+                  />
+                </div>
                 <div className="field-group full-width">
                   <label className="field-label">Address</label>
                   <input
@@ -193,6 +224,46 @@ function CategoryList({ items, selectedItem, onSelectItem, onCreateItem, loading
                   />
                 </div>
               </div>
+            </div>
+
+            {/* File Upload Section */}
+            <div className="form-section">
+              <div className="section-divider">
+                <span>Attachments <em>(optional)</em></span>
+              </div>
+              <div className="file-upload-area">
+                <label htmlFor="file-input" className="file-upload-label">
+                  <span className="upload-icon">📎</span>
+                  <span className="upload-text">Click to add documents or images</span>
+                </label>
+                <input
+                  id="file-input"
+                  type="file"
+                  multiple
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                />
+              </div>
+
+              {selectedFiles.length > 0 && (
+                <div className="selected-files">
+                  <p className="files-label">{selectedFiles.length} file(s) selected:</p>
+                  <div className="files-preview">
+                    {selectedFiles.map((file, idx) => (
+                      <div key={idx} className="file-tag">
+                        <span className="file-name">{file.name}</span>
+                        <button
+                          type="button"
+                          className="file-remove"
+                          onClick={() => removeFile(idx)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Actions */}
