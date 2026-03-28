@@ -32,8 +32,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #0f3460;
+  box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
 }
 
 .users-list {
@@ -55,7 +55,7 @@
 
 .user-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  border-color: #0f3460;
 }
 
 .user-info {
@@ -76,7 +76,7 @@
 
 .share-btn {
   padding: 8px 16px;
-  background: #667eea;
+  background: #0f3460;
   color: white;
   border: none;
   border-radius: 4px;
@@ -89,7 +89,7 @@
 }
 
 .share-btn:hover {
-  background: #5568d3;
+  background: #1a1a2e;
 }
 
 .share-btn:active {
@@ -171,5 +171,169 @@
 }
 
 .share-btn:disabled:hover {
-  background: #667eea;
+  background: #0f3460;
+}
+
+/* ── Currently sharing with ──────────────────────────── */
+.shared-with-section {
+  margin-top: 28px;
+  border-top: 1px solid #e2e6ef;
+  padding-top: 20px;
+}
+
+.shared-with-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.shared-with-icon {
+  display: flex;
+  align-items: center;
+  color: #0f3460;
+}
+
+.shared-with-header h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a4560;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shared-count {
+  background: #0f3460;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  line-height: 1.6;
+}
+
+.shared-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+  color: #9aa0b2;
+  font-size: 13px;
+}
+
+.shared-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shared-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: white;
+  border: 1px solid #e2e6ef;
+  border-radius: 8px;
+  transition: border-color 0.15s;
+}
+
+.shared-row:hover {
+  border-color: #b0bcd4;
+}
+
+.shared-row.invited {
+  background: #fffbf2;
+  border-color: #f0ddb0;
+}
+
+.shared-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #eef1f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f3460;
+  flex-shrink: 0;
+}
+
+.shared-row.invited .shared-avatar {
+  background: #fef3d8;
+  color: #b07a00;
+}
+
+.shared-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shared-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shared-email {
+  font-size: 11px;
+  color: #8a93ab;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shared-meta {
+  flex-shrink: 0;
+}
+
+.shared-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.shared-badge.active {
+  background: #d4f4e2;
+  color: #1a7a44;
+}
+
+.shared-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.shared-remove-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  background: transparent;
+  color: #9aa0b2;
+  border: 1px solid #d0d6e4;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.shared-remove-btn:hover {
+  background: #e94560;
+  color: white;
+  border-color: #e94560;
+}
+
+.shared-remove-btn.invited:hover {
+  background: #e67e00;
+  border-color: #e67e00;
 }

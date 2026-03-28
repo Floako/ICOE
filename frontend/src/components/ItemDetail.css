@@ -1,113 +1,228 @@
+/* ─── Item Detail ────────────────────────────────────────── */
 .item-detail {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+  padding: 28px;
   margin-top: 20px;
+  overflow: hidden;
 }
 
+/* ─── Detail Header ──────────────────────────────────────── */
 .detail-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 15px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1.5px solid #eaeef5;
 }
 
 .detail-header h2 {
   margin: 0;
-  color: #333;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.3;
 }
 
 .detail-actions {
   display: flex;
   gap: 10px;
+  flex-shrink: 0;
+  margin-left: 16px;
 }
 
-.edit-btn {
-  background-color: #667eea;
-  color: white;
-}
-
-.delete-btn {
-  background-color: #d32f2f;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #b71c1c;
-}
-
-.delete-file-btn {
-  background: none;
-  border: none;
-  color: #d32f2f;
+.detail-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0f4ff;
+  color: #0f3460;
+  border: 1.5px solid #d0d9ef;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 1.5rem;
-  padding: 0;
-  width: 30px;
-  height: 30px;
+  transition: all 0.2s;
 }
 
-.delete-file-btn:hover {
-  color: #b71c1c;
+.detail-edit-btn:hover {
+  background: #e2eaff;
+  border-color: #0f3460;
 }
 
+.detail-delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff5f5;
+  color: #c0392b;
+  border: 1.5px solid #f5c2c2;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detail-delete-btn:hover {
+  background: #ffe8e8;
+  border-color: #c0392b;
+}
+
+/* ─── Info Badges (view mode) ────────────────────────────── */
+.info-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.badge-type,
+.badge-priority {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid #dde2ee;
+  background: #f8f9fc;
+  color: #444;
+}
+
+/* ─── Info Items (view mode) ─────────────────────────────── */
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.info-item {
+  background: #f8f9fc;
+  border: 1px solid #eaeef5;
+  border-left: 3px solid #0f3460;
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
+}
+
+.info-item strong {
+  display: block;
+  color: #0f3460;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.info-item p {
+  margin: 0;
+  color: #444;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.contact-details p {
+  margin: 0;
+  color: #444;
+  font-size: 0.92rem;
+}
+
+.contact-details strong {
+  display: inline;
+  color: #666;
+  font-size: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+/* ─── Edit Form ──────────────────────────────────────────── */
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 5px;
+  gap: 18px;
+  margin-bottom: 28px;
+  background: #f8f9fc;
+  border: 1px solid #eaeef5;
+  border-radius: 14px;
+  padding: 22px;
 }
 
-.form-group {
+.edit-form .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
-.form-group label {
-  color: #333;
-  font-weight: 500;
+.edit-form .form-group label {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
-.form-group textarea {
-  min-height: 100px;
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  background: white;
+  border: 1.5px solid #dde2ee;
+  color: #1a1a2e;
+  padding: 10px 13px;
+  border-radius: 9px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus {
+  outline: none;
+  border-color: #0f3460;
+  box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+}
+
+.edit-form textarea {
+  min-height: 90px;
   resize: vertical;
 }
 
-.form-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.form-actions button {
-  padding: 10px 20px;
-}
-
+/* ─── Contact section within edit form ───────────────────── */
 .contact-section {
   background: white;
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
-  margin: 10px 0;
+  border: 1px solid #eaeef5;
+  border-radius: 10px;
+  padding: 16px;
 }
 
 .contact-section h4 {
-  margin: 0 0 15px 0;
-  color: #667eea;
-  font-size: 0.95rem;
+  margin: 0 0 14px 0;
+  color: #0f3460;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
 }
 
 .edit-form .contact-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  gap: 14px;
 }
 
 .edit-form .contact-section h4 {
@@ -118,49 +233,7 @@
   margin: 0;
 }
 
-.contact-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-details p {
-  margin: 0;
-  color: #666;
-  font-size: 0.95rem;
-}
-
-.contact-details strong {
-  color: #333;
-}
-
-.detail-info {
-  margin-bottom: 30px;
-}
-
-.info-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-.badge-type,
-.badge-priority {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border: 1.5px solid #ccc;
-  background: #f4f4f4;
-  color: #555;
-}
-
-.badge-priority {
-  border-width: 1.5px;
-}
-
+/* ─── Radio pills (edit mode) ────────────────────────────── */
 .edit-radio-group {
   display: flex;
   flex-wrap: wrap;
@@ -171,15 +244,16 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 14px;
+  padding: 6px 14px;
   border-radius: 20px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid #dde2ee;
   cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.84rem;
+  font-weight: 600;
   transition: all 0.15s;
   background: white;
   color: #555;
+  user-select: none;
 }
 
 .edit-radio-pill input[type="radio"] {
@@ -187,87 +261,141 @@
 }
 
 .edit-radio-pill.selected {
-  border-color: #667eea;
-  color: #667eea;
-  background: #667eea18;
+  border-color: #0f3460;
+  color: #0f3460;
+  background: rgba(15, 52, 96, 0.07);
 }
 
-.info-item {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-left: 4px solid #667eea;
-  border-radius: 3px;
+/* ─── Form actions (edit mode) ───────────────────────────── */
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
-.info-item strong {
+.form-actions button {
+  padding: 10px 22px;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.form-actions button:first-child {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.25);
+}
+
+.form-actions button:first-child:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(15, 52, 96, 0.35);
+}
+
+.form-actions button:last-child {
+  background: white;
+  color: #555;
+  border: 1.5px solid #dde2ee;
+}
+
+.form-actions button:last-child:hover {
+  border-color: #aaa;
   color: #333;
-  display: block;
-  margin-bottom: 8px;
 }
 
-.info-item p {
-  margin: 0;
-  color: #666;
-  word-break: break-word;
-}
-
+/* ─── Files Section ──────────────────────────────────────── */
 .files-section {
-  margin-top: 30px;
-  padding-top: 30px;
-  border-top: 2px solid #e0e0e0;
+  border-top: 1.5px solid #eaeef5;
+  padding-top: 22px;
 }
 
 .files-section h3 {
-  color: #333;
-  margin-bottom: 15px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #555;
+  margin: 0 0 14px 0;
 }
 
 .file-upload {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
-.file-upload input[type="file"] {
-  display: none;
-}
-
-.file-upload label {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #667eea;
-  color: white;
-  border-radius: 5px;
+.file-upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  background: #f0f4ff;
+  color: #0f3460;
+  border: 1.5px dashed #c0cee8;
+  border-radius: 9px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-.file-upload label:hover {
-  background-color: #764ba2;
+.file-upload-label:hover {
+  background: #e2eaff;
+  border-color: #0f3460;
+  border-style: solid;
 }
 
 .files-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .file-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px;
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 5px;
+  gap: 10px;
+  padding: 11px 14px;
+  background: #f8f9fc;
+  border: 1px solid #eaeef5;
+  border-radius: 9px;
+  transition: border-color 0.2s;
+}
+
+.file-item:hover {
+  border-color: #c8d2e8;
 }
 
 .file-item a {
-  color: #667eea;
-  text-decoration: none;
   flex: 1;
+  color: #0f3460;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
   word-break: break-word;
 }
 
 .file-item a:hover {
   text-decoration: underline;
+  color: #e94560;
 }
+
+.delete-file-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 5px;
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.delete-file-btn:hover {
+  color: #c0392b;
+  background: #fff0f0;
+}
+

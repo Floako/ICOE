@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './ItemDetail.css';
+import Icon from './Icons';
 
 const ITEM_TYPES = [
-  { value: 'document',  label: '📄 Document' },
-  { value: 'contact',   label: '👤 Contact' },
-  { value: 'account',   label: '🏦 Account' },
-  { value: 'policy',    label: '🛡️ Policy' },
+  { value: 'document',  label: 'Document' },
+  { value: 'contact',   label: 'Contact' },
+  { value: 'account',   label: 'Account' },
+  { value: 'policy',    label: 'Policy' },
 ];
 
 const PRIORITY_LEVELS = [
   { value: 'normal',    label: 'Normal',    color: '#52c41a' },
-  { value: 'important', label: 'Important', color: '#faad14' },
+  { value: 'important', label: 'Important', color: '#e67e00' },
   { value: 'critical',  label: 'Critical',  color: '#e94560' },
 ];
 
@@ -89,8 +90,12 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
         <div className="detail-actions">
           {!isEditing && (
             <>
-              <button onClick={() => setIsEditing(true)} className="edit-btn">Edit</button>
-              <button onClick={handleDelete} className="delete-btn">Delete</button>
+              <button onClick={() => setIsEditing(true)} className="detail-edit-btn">
+                <Icon name="edit" size={14} /> Edit
+              </button>
+              <button onClick={handleDelete} className="detail-delete-btn">
+                <Icon name="trash" size={14} /> Delete
+              </button>
             </>
           )}
         </div>
@@ -231,7 +236,7 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
               const p = PRIORITY_LEVELS.find(x => x.value === formData.priority);
               return (
                 <>
-                  {t && <span className="badge-type">{t.label}</span>}
+          {t && <span className="badge-type"><Icon name={t.value} size={13} strokeWidth={1.6} /> {t.label}</span>}
                   {p && <span className="badge-priority" style={{ borderColor: p.color, color: p.color, background: p.color + '18' }}>{p.label}</span>}
                 </>
               );
@@ -276,26 +281,31 @@ function ItemDetail({ item, token, onUpdate, onDelete }) {
 
       <div className="files-section">
         <h3>Documents</h3>
-        <div className="file-upload">
-          <input
-            type="file"
-            id="file-input"
-            onChange={handleFileUpload}
-            disabled={uploading}
-          />
-          <label htmlFor="file-input">
-            {uploading ? 'Uploading...' : 'Upload Scan/Document'}
-          </label>
-        </div>
+            <div className="file-upload">
+              <input
+                type="file"
+                id="file-input"
+                onChange={handleFileUpload}
+                disabled={uploading}
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="file-input" className="file-upload-label">
+                <Icon name="upload" size={14} />
+                {uploading ? 'Uploading…' : 'Attach a file'}
+              </label>
+            </div>
         
         {files.length > 0 && (
           <div className="files-list">
             {files.map(file => (
               <div key={file.id} className="file-item">
+                <Icon name="file-text" size={14} color="#0f3460" strokeWidth={1.5} />
                 <a href={file.url ? (file.url.startsWith('/uploads/') ? `http://localhost:5000${file.url}` : file.url) : '#'} target="_blank" rel="noopener noreferrer">
                   {file.original_filename}
                 </a>
-                <button onClick={() => handleDeleteFile(file.id)} className="delete-file-btn">×</button>
+                <button onClick={() => handleDeleteFile(file.id)} className="delete-file-btn" title="Remove file">
+                  <Icon name="trash" size={13} />
+                </button>
               </div>
             ))}
           </div>

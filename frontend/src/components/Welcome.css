@@ -1,6 +1,22 @@
+/* ── Palette — edit ONLY this block to retheme the whole page ── */
 .welcome-page {
+  --accent:        #e94560;
+  --accent-dark:   #c73652;
+  --accent-glow:   rgba(233, 69, 96, 0.35);
+  --accent-border: rgba(233, 69, 96, 0.28);
+  --bg-darkest:    #1a1a2e;
+  --bg-mid:        #16213e;
+  --bg-navy:       #0f3460;
+  --text-bright:   #ccd6f6;
+  --text-mid:      #8892b0;
+  --text-subtle:   #a8b2d8;
+  --text-footer:   #4a5568;
+  --card-bg:       rgba(255, 255, 255, 0.06);
+  --card-border:   rgba(255, 255, 255, 0.10);
+  --card-bg-hover: rgba(255, 255, 255, 0.09);
+
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, var(--bg-darkest) 0%, var(--bg-mid) 50%, var(--bg-navy) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,22 +34,22 @@
   font-size: 5rem;
   font-weight: 900;
   letter-spacing: 6px;
-  color: #e94560;
+  color: var(--accent);
   margin: 0;
-  text-shadow: 0 0 30px rgba(233, 69, 96, 0.4);
+  text-shadow: 0 0 30px var(--accent-glow);
 }
 
 .welcome-logo p {
   font-size: 1.1rem;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #a8b2d8;
+  color: var(--text-subtle);
   margin: 6px 0 0 0;
 }
 
 .welcome-tagline {
   font-size: 1.4rem;
-  color: #ccd6f6;
+  color: var(--text-bright);
   margin: 30px 0 10px 0;
   font-weight: 300;
   max-width: 560px;
@@ -41,45 +57,57 @@
 
 .welcome-sub {
   font-size: 1rem;
-  color: #8892b0;
+  color: var(--text-mid);
   max-width: 500px;
   line-height: 1.7;
   margin-bottom: 40px;
 }
 
 .welcome-features {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
   margin-bottom: 50px;
-  max-width: 700px;
+  max-width: 580px;
+  width: 100%;
+  text-align: left;
 }
 
-.welcome-feature-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 24px 20px;
-  width: 180px;
-  backdrop-filter: blur(10px);
+.wf-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 10px;
+  transition: background 0.18s;
 }
 
-.welcome-feature-card .icon {
-  font-size: 2rem;
-  margin-bottom: 10px;
+.wf-item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.welcome-feature-card h3 {
-  font-size: 0.95rem;
+.wf-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.wf-text h3 {
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #ccd6f6;
-  margin: 0 0 6px 0;
+  color: var(--text-bright);
+  margin: 0 0 4px 0;
 }
 
-.welcome-feature-card p {
-  font-size: 0.8rem;
-  color: #8892b0;
+.wf-text p {
+  font-size: 0.78rem;
+  color: var(--text-mid);
   margin: 0;
   line-height: 1.5;
 }
@@ -92,7 +120,7 @@
 }
 
 .btn-primary-welcome {
-  background: #e94560;
+  background: var(--accent);
   color: white;
   border: none;
   padding: 14px 36px;
@@ -105,13 +133,13 @@
 }
 
 .btn-primary-welcome:hover {
-  background: #c73652;
+  background: var(--accent-dark);
   transform: translateY(-1px);
 }
 
 .btn-secondary-welcome {
   background: transparent;
-  color: #ccd6f6;
+  color: var(--text-bright);
   border: 2px solid rgba(255,255,255,0.25);
   padding: 14px 36px;
   font-size: 1rem;
@@ -129,11 +157,91 @@
 .welcome-footer {
   margin-top: 50px;
   font-size: 0.78rem;
-  color: #4a5568;
+  color: var(--text-footer);
+}
+
+.welcome-page.home-entry {
+  gap: 14px;
+}
+
+.welcome-page.home-entry .welcome-tagline {
+  margin-bottom: 22px;
+}
+
+.enter-btn {
+  min-width: 220px;
 }
 
 @media (max-width: 600px) {
   .welcome-logo h1 { font-size: 3.5rem; }
   .welcome-tagline { font-size: 1.1rem; }
-  .welcome-feature-card { width: 140px; padding: 18px 14px; }
+  .welcome-features { grid-template-columns: 1fr; gap: 4px; }
+}
+
+/* ── Animated use-case ticker ─────────────────────── */
+.ticker-section {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 0 48px 0;
+}
+
+.ticker-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-mid);
+  margin: 0 0 16px 0;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.ticker-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ticker-row {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent 0%, black 9%, black 91%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 9%, black 91%, transparent 100%);
+}
+
+.ticker-track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: ticker-left linear infinite;
+}
+
+.ticker-track.reverse {
+  animation-name: ticker-right;
+}
+
+.ticker-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 15px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 0.79rem;
+  color: var(--text-subtle);
+  white-space: nowrap;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+}
+
+@keyframes ticker-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes ticker-right {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation-play-state: paused; }
 }

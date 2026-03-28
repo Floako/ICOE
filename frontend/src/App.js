@@ -11,9 +11,11 @@ function App() {
   // Parse invitation link: /register?invited_email=someone@example.com
   const urlParams = new URLSearchParams(window.location.search);
   const invitedEmail = urlParams.get('invited_email') || '';
-  const initialMode = invitedEmail ? 'register' : 'login';
+  const resetToken = urlParams.get('token') || '';
+  const isResetPath = window.location.pathname.toLowerCase().includes('/reset-password');
+  const initialMode = isResetPath && resetToken ? 'reset' : (invitedEmail ? 'register' : 'login');
 
-  const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('token') && !invitedEmail);
+  const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('token') && !invitedEmail && !(isResetPath && resetToken));
   const [authMode, setAuthMode] = useState(initialMode);
 
   // Clear session data on app mount if no token
@@ -25,6 +27,16 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (isResetPath && resetToken) {
+      setToken(null);
+      setUser(null);
+      setShowWelcome(false);
+      setAuthMode('reset');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return;
+    }
+
     if (!invitedEmail) {
       return;
     }
@@ -36,7 +48,7 @@ function App() {
     setAuthMode('register');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  }, [invitedEmail]);
+  }, [invitedEmail, isResetPath, resetToken]);
 
   const handleLoginSuccess = (token, user) => {
     setToken(token);
@@ -82,6 +94,7 @@ function App() {
           onClearSavedSession={handleClearSavedSession}
           initialMode={authMode}
           invitedEmail={invitedEmail}
+          resetToken={isResetPath ? resetToken : ''}
         />
       ) : (
         <Dashboard user={user} token={token} onLogout={handleLogout} />

@@ -18,10 +18,14 @@ function SharedWithMe() {
       const response = await fetch(`${API_URL}/shared-with-me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload.error || 'Failed to load shared data');
+      }
       const data = await response.json();
       setSharedData(data || []);
     } catch (err) {
-      setError('Failed to load shared data');
+      setError(err.message || 'Failed to load shared data');
     } finally {
       setLoading(false);
     }
@@ -58,6 +62,10 @@ function SharedWithMe() {
           `${API_URL}/shared/${ownerId}/categories/${category.id}/items`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error || `Failed to load items for ${category.category_name}`);
+        }
         const items = await response.json();
         itemsData[category.id] = items || [];
       }
@@ -66,10 +74,11 @@ function SharedWithMe() {
         [ownerId]: itemsData
       }));
     } catch (err) {
-      setError('Failed to load items');
+      const message = err.message || 'Failed to load items';
+      setError(message);
       setSelectedItems(prev => ({
         ...prev,
-        [ownerId]: {}
+        [ownerId]: { __error: message }
       }));
     }
   };
@@ -108,6 +117,8 @@ function SharedWithMe() {
                 <div className="owner-content">
                   {selectedItems[owner.owner_id] === 'loading' ? (
                     <p className="loading-items">Loading items...</p>
+                  ) : selectedItems[owner.owner_id] && selectedItems[owner.owner_id].__error ? (
+                    <p className="no-items">{selectedItems[owner.owner_id].__error}</p>
                   ) : owner.categories && owner.categories.length > 0 ? (
                     <div className="categories-list">
                       {owner.categories.map(category => (
@@ -141,6 +152,24 @@ function SharedWithMe() {
                                         <p className="item-ref">
                                           <strong>Ref:</strong> {item.reference_number}
                                         </p>
+                                      )}
+                                      {item.files && item.files.length > 0 && (
+                                        <div className="item-files">
+                                          <strong>Documents:</strong>
+                                          <div className="file-links">
+                                            {item.files.map(file => (
+                                              <a
+                                                key={file.id}
+                                                href={file.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="file-link"
+                                              >
+                                                {file.original_filename || file.filename}
+                                              </a>
+                                            ))}
+                                          </div>
+                                        </div>
                                       )}
                                     </div>
                                   );

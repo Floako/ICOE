@@ -49,7 +49,7 @@ function ManageAccess() {
       }
 
       setMessage('Access revoked');
-      setAccessList(accessList.filter(item => item.id !== userId || item.type === 'invited'));
+      setAccessList(accessList.filter(item => !(item.id === userId && item.type === 'active')));
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to revoke access');
@@ -73,7 +73,7 @@ function ManageAccess() {
       }
 
       setMessage('Invitation cancelled');
-      setAccessList(accessList.filter(item => item.id !== invitationId));
+      setAccessList(accessList.filter(item => !(item.id === invitationId && item.type === 'invited')));
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       setError(err.message || 'Failed to cancel invitation');

@@ -36,7 +36,7 @@
 
 .access-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #667eea;
+  border-color: #0f3460;
 }
 
 .access-card.invited {

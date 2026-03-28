@@ -2,16 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'change-this-before-production';
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not set. Refusing to start.');
+  process.exit(1);
+}
 
 // Email configuration
 const emailConfig = {
@@ -65,10 +73,60 @@ async function sendInvitationEmail(invitedEmail, ownerUsername, invitationLink) 
   }
 }
 
+async function sendPasswordResetEmail(email, username, resetLink) {
+  try {
+    const displayName = username || email;
+    await emailTransporter.sendMail({
+      from: EMAIL_FROM,
+      to: email,
+      subject: 'ICOE password reset request',
+      html: `
+        <h2>Password Reset</h2>
+        <p>Hello ${displayName},</p>
+        <p>We received a request to reset your ICOE password.</p>
+        <p>
+          <a href="${resetLink}" style="display:inline-block;background-color:#e94560;color:white;padding:12px 24px;text-decoration:none;border-radius:5px;">
+            Reset Password
+          </a>
+        </p>
+        <p>This link expires in 1 hour.</p>
+        <p>If you did not request this, you can safely ignore this email.</p>
+      `,
+      text: `Reset your ICOE password using this link (valid for 1 hour): ${resetLink}`,
+    });
+    return true;
+  } catch (error) {
+    console.error(`Failed to send password reset email to ${email}:`, error.message);
+    return false;
+  }
+}
+
+// Rate limiters
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
 // Middleware
-app.use(cors());
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
+  .split(',').map(s => s.trim());
+app.use(helmet());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    // Allow any localhost origin (any port) for local development
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return callback(null, true);
+    // Allow configured production origin(s)
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true
+}));
 app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Database setup (PostgreSQL)
 const pool = new Pool({
@@ -77,7 +135,14 @@ const pool = new Pool({
 });
 
 const db = {
-  query: (text, params) => pool.query(text, params)
+  query: async (text, params) => {
+    try {
+      return await pool.query(text, params);
+    } catch (err) {
+      console.error('DB error:', err.message);
+      throw new Error('Database error');
+    }
+  }
 };
 
 // File upload setup
@@ -115,8 +180,17 @@ async function initializeDatabase() {
       username TEXT UNIQUE,
       email TEXT UNIQUE,
       password TEXT,
+      vault_access TEXT DEFAULT 'full',
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
+  `);
+  await db.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS vault_access TEXT DEFAULT 'full'`);
+  await db.query(`
+    UPDATE users
+    SET vault_access = 'full'
+    WHERE vault_access IS NULL
+       OR TRIM(vault_access) = ''
+       OR vault_access NOT IN ('full', 'view_only')
   `);
   await db.query(`
     CREATE TABLE IF NOT EXISTS categories (
@@ -183,6 +257,26 @@ async function initializeDatabase() {
       UNIQUE(owner_id, invited_email)
     )
   `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS vault_access_requests (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER UNIQUE REFERENCES users(id),
+      status TEXT DEFAULT 'pending',
+      requested_at TIMESTAMPTZ DEFAULT NOW(),
+      reviewed_at TIMESTAMPTZ,
+      note TEXT
+    )
+  `);
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER REFERENCES users(id),
+      token TEXT UNIQUE,
+      expires_at TIMESTAMPTZ,
+      used BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `);
   console.log('Connected to PostgreSQL and tables ready');
 }
 
@@ -193,37 +287,68 @@ function authenticateToken(req, res, next) {
 
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, async (err, user) => {
     if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
+
+    try {
+      const result = await db.query(
+        'SELECT id, email, username, vault_access FROM users WHERE id = $1',
+        [user.id]
+      );
+
+      if (!result.rows[0]) return res.sendStatus(401);
+
+      req.user = result.rows[0];
+      next();
+    } catch (dbErr) {
+      res.status(500).json({ error: dbErr.message });
+    }
   });
+}
+
+function requireVaultAccess(req, res, next) {
+  if (req.user.vault_access === 'view_only') {
+    return res.status(403).json({
+      error: 'Your account currently has view access only. Request your own vault access to add or edit personal records.'
+    });
+  }
+
+  next();
 }
 
 // ROUTES
 
+// Protected file serving — requires a valid JWT
+app.get('/uploads/:filename', authenticateToken, (req, res) => {
+  const filename = path.basename(req.params.filename);
+  const filepath = path.join(__dirname, 'uploads', filename);
+  if (!fs.existsSync(filepath)) return res.status(404).json({ error: 'File not found' });
+  res.sendFile(filepath);
+});
+
 // Register
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/auth/register', authLimiter, async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 10);
-
   try {
-    const result = await db.query(
-      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
-      [username, email, hashedPassword]
-    );
-    const newUserId = result.rows[0].id;
-
-    // Auto-accept pending invitations for this email
+    const hashedPassword = await bcrypt.hash(password, 10);
     const invitations = await db.query(
       'SELECT owner_id FROM invitations WHERE invited_email = $1 AND status = $2 AND expires_at > NOW()',
       [email, 'pending']
     );
+    const vaultAccess = invitations.rows.length > 0 ? 'view_only' : 'full';
+
+    const result = await db.query(
+      'INSERT INTO users (username, email, password, vault_access) VALUES ($1, $2, $3, $4) RETURNING id',
+      [username, email, hashedPassword, vaultAccess]
+    );
+    const newUserId = result.rows[0].id;
+
+    // Auto-accept pending invitations for this email
     for (const invite of invitations.rows) {
       await db.query(
         'INSERT INTO permissions (owner_id, viewer_id, access_level) VALUES ($1, $2, $3) ON CONFLICT (owner_id, viewer_id) DO NOTHING',
@@ -235,14 +360,14 @@ app.post('/api/auth/register', async (req, res) => {
       );
     }
 
-    res.status(201).json({ message: 'User registered', id: newUserId });
+    res.status(201).json({ message: 'User registered', id: newUserId, vault_access: vaultAccess });
   } catch (err) {
     return res.status(400).json({ error: 'Username or email already exists' });
   }
 });
 
 // Login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -253,15 +378,90 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    res.json({ token, user: { id: user.id, email: user.email, username: user.username } });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token, user: { id: user.id, email: user.email, username: user.username, vault_access: user.vault_access || 'full' } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+app.post('/api/auth/forgot-password', authLimiter, async (req, res) => {
+  const email = (req.body.email || '').trim().toLowerCase();
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const userResult = await db.query(
+      'SELECT id, username, email FROM users WHERE LOWER(email) = LOWER($1)',
+      [email]
+    );
+
+    // Always return success shape to avoid user enumeration.
+    if (!userResult.rows[0]) {
+      return res.json({ message: 'If this email exists, a reset link has been sent.' });
+    }
+
+    const user = userResult.rows[0];
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+
+    await db.query('UPDATE password_resets SET used = true WHERE user_id = $1 AND used = false', [user.id]);
+    await db.query(
+      'INSERT INTO password_resets (user_id, token, expires_at, used) VALUES ($1, $2, $3, false)',
+      [user.id, token, expiresAt]
+    );
+
+    const frontendBase = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetLink = `${frontendBase}/reset-password?token=${encodeURIComponent(token)}`;
+    await sendPasswordResetEmail(user.email, user.username, resetLink);
+
+    return res.json({ message: 'If this email exists, a reset link has been sent.' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/reset-password', authLimiter, async (req, res) => {
+  const token = (req.body.token || '').trim();
+  const newPassword = req.body.new_password || '';
+
+  if (!token || !newPassword) {
+    return res.status(400).json({ error: 'Token and new password are required' });
+  }
+
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  }
+
+  try {
+    const resetResult = await db.query(
+      `SELECT id, user_id
+       FROM password_resets
+       WHERE token = $1 AND used = false AND expires_at > NOW()
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [token]
+    );
+
+    const resetRow = resetResult.rows[0];
+    if (!resetRow) {
+      return res.status(400).json({ error: 'Reset link is invalid or expired' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, resetRow.user_id]);
+    await db.query('UPDATE password_resets SET used = true WHERE id = $1', [resetRow.id]);
+
+    return res.json({ message: 'Password has been reset successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // Get all categories for user
-app.get('/api/categories', authenticateToken, async (req, res) => {
+app.get('/api/categories', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       `SELECT c.*, CAST(COUNT(i.id) AS INTEGER) AS item_count
@@ -277,7 +477,7 @@ app.get('/api/categories', authenticateToken, async (req, res) => {
 });
 
 // Create category
-app.post('/api/categories', authenticateToken, async (req, res) => {
+app.post('/api/categories', authenticateToken, requireVaultAccess, async (req, res) => {
   const { category_name } = req.body;
   try {
     const result = await db.query(
@@ -289,7 +489,7 @@ app.post('/api/categories', authenticateToken, async (req, res) => {
 });
 
 // Get ALL items across all categories for the logged-in user (with category name)
-app.get('/api/items/all', authenticateToken, async (req, res) => {
+app.get('/api/items/all', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       `SELECT i.*, c.category_name
@@ -304,7 +504,7 @@ app.get('/api/items/all', authenticateToken, async (req, res) => {
 });
 
 // Get items for category
-app.get('/api/categories/:categoryId/items', authenticateToken, async (req, res) => {
+app.get('/api/categories/:categoryId/items', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       'SELECT * FROM items WHERE category_id = $1 AND user_id = $2',
@@ -315,7 +515,7 @@ app.get('/api/categories/:categoryId/items', authenticateToken, async (req, res)
 });
 
 // Create item
-app.post('/api/categories/:categoryId/items', authenticateToken, async (req, res) => {
+app.post('/api/categories/:categoryId/items', authenticateToken, requireVaultAccess, async (req, res) => {
   const { title, item_type, priority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date, expiry_date } = req.body;
   const validTypes = ['document', 'contact', 'account', 'policy'];
   const validPriorities = ['normal', 'important', 'critical'];
@@ -331,7 +531,7 @@ app.post('/api/categories/:categoryId/items', authenticateToken, async (req, res
 });
 
 // Update item
-app.put('/api/items/:itemId', authenticateToken, async (req, res) => {
+app.put('/api/items/:itemId', authenticateToken, requireVaultAccess, async (req, res) => {
   const { title, item_type, priority, description, contact_name, contact_phone, contact_address, contact_email, reference_number, start_date, expiry_date } = req.body;
   const validTypes = ['document', 'contact', 'account', 'policy'];
   const validPriorities = ['normal', 'important', 'critical'];
@@ -347,7 +547,7 @@ app.put('/api/items/:itemId', authenticateToken, async (req, res) => {
 });
 
 // Delete item
-app.delete('/api/items/:itemId', authenticateToken, async (req, res) => {
+app.delete('/api/items/:itemId', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     await db.query('DELETE FROM items WHERE id=$1 AND user_id=$2', [req.params.itemId, req.user.id]);
     res.json({ message: 'Item deleted' });
@@ -355,7 +555,7 @@ app.delete('/api/items/:itemId', authenticateToken, async (req, res) => {
 });
 
 // Upload file
-app.post('/api/items/:itemId/upload', authenticateToken, (req, res) => {
+app.post('/api/items/:itemId/upload', authenticateToken, requireVaultAccess, (req, res) => {
   upload.single('file')(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -371,7 +571,7 @@ app.post('/api/items/:itemId/upload', authenticateToken, (req, res) => {
 });
 
 // Get files for item
-app.get('/api/items/:itemId/files', authenticateToken, async (req, res) => {
+app.get('/api/items/:itemId/files', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM files WHERE item_id=$1', [req.params.itemId]);
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
@@ -381,7 +581,7 @@ app.get('/api/items/:itemId/files', authenticateToken, async (req, res) => {
 });
 
 // Delete file
-app.delete('/api/files/:fileId', authenticateToken, async (req, res) => {
+app.delete('/api/files/:fileId', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM files WHERE id=$1', [req.params.fileId]);
     const file = result.rows[0];
@@ -395,7 +595,7 @@ app.delete('/api/files/:fileId', authenticateToken, async (req, res) => {
 // SHARING ENDPOINTS
 
 // Get all users (for search/nominate)
-app.get('/api/users', authenticateToken, async (req, res) => {
+app.get('/api/users', authenticateToken, requireVaultAccess, async (req, res) => {
   const { search } = req.query;
   try {
     let query = 'SELECT id, username, email, \'registered\' as status FROM users WHERE id != $1';
@@ -421,7 +621,7 @@ app.get('/api/users', authenticateToken, async (req, res) => {
 });
 
 // Share data
-app.post('/api/share', authenticateToken, async (req, res) => {
+app.post('/api/share', authenticateToken, requireVaultAccess, async (req, res) => {
   const { viewer_id } = req.body;
   const owner_id = req.user.id;
   if (!viewer_id) return res.status(400).json({ error: 'Missing viewer_id' });
@@ -437,7 +637,7 @@ app.post('/api/share', authenticateToken, async (req, res) => {
 });
 
 // Revoke access
-app.delete('/api/share/:viewerId', authenticateToken, async (req, res) => {
+app.delete('/api/share/:viewerId', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       'DELETE FROM permissions WHERE owner_id=$1 AND viewer_id=$2',
@@ -449,7 +649,7 @@ app.delete('/api/share/:viewerId', authenticateToken, async (req, res) => {
 });
 
 // Get list of people I've shared with
-app.get('/api/my-sharers', authenticateToken, async (req, res) => {
+app.get('/api/my-sharers', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       `SELECT p.viewer_id, u.username, u.email, p.created_at 
@@ -485,7 +685,29 @@ app.get('/api/shared/:ownerId/categories/:categoryId/items', authenticateToken, 
   try {
     const perm = await db.query('SELECT * FROM permissions WHERE owner_id=$1 AND viewer_id=$2', [req.params.ownerId, req.user.id]);
     if (!perm.rows[0]) return res.status(403).json({ error: 'Access denied' });
-    const result = await db.query('SELECT * FROM items WHERE category_id=$1 AND user_id=$2', [req.params.categoryId, req.params.ownerId]);
+    const backendUrl = process.env.BACKEND_URL || `http://localhost:${PORT}`;
+    const result = await db.query(
+      `SELECT i.*,
+        COALESCE((
+          SELECT json_agg(
+            json_build_object(
+              'id', f.id,
+              'filename', f.filename,
+              'original_filename', f.original_filename,
+              'filepath', f.filepath,
+              'created_at', f.uploaded_at,
+              'url', $3 || '/uploads/' || f.filename
+            )
+          )
+          FROM files f
+          WHERE f.item_id = i.id
+        ), '[]'::json) AS files
+      FROM items i
+      JOIN categories c ON c.id = i.category_id
+      WHERE i.category_id=$1 AND c.user_id=$2
+      ORDER BY i.updated_at DESC NULLS LAST, i.created_at DESC`,
+      [req.params.categoryId, req.params.ownerId, backendUrl]
+    );
     res.json(result.rows);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -493,32 +715,48 @@ app.get('/api/shared/:ownerId/categories/:categoryId/items', authenticateToken, 
 // INVITATION ENDPOINTS
 
 // Send invite
-app.post('/api/invite', authenticateToken, async (req, res) => {
+app.post('/api/invite', authenticateToken, requireVaultAccess, async (req, res) => {
   const { invited_email } = req.body;
   const owner_id = req.user.id;
-  if (!invited_email) return res.status(400).json({ error: 'Missing invited_email' });
+  const normalizedEmail = (invited_email || '').trim().toLowerCase();
+  if (!normalizedEmail) return res.status(400).json({ error: 'Missing invited_email' });
 
   try {
     const ownerResult = await db.query('SELECT username, email FROM users WHERE id=$1', [owner_id]);
     const owner = ownerResult.rows[0];
     const ownerDisplayName = owner?.username || owner?.email || 'Someone';
 
-    const existing = await db.query('SELECT id FROM users WHERE email=$1', [invited_email]);
-    if (existing.rows[0]) return res.status(400).json({ error: 'User already registered - use Share Data instead' });
+    const existing = await db.query('SELECT id FROM users WHERE LOWER(email)=LOWER($1)', [normalizedEmail]);
+    if (existing.rows[0]) {
+      if (existing.rows[0].id === owner_id) {
+        return res.status(400).json({ error: 'You cannot share data with yourself' });
+      }
+
+      await db.query(
+        'INSERT INTO permissions (owner_id, viewer_id, access_level) VALUES ($1,$2,$3) ON CONFLICT (owner_id, viewer_id) DO UPDATE SET access_level=$3',
+        [owner_id, existing.rows[0].id, 'view']
+      );
+
+      return res.status(200).json({
+        message: 'User already registered. Access granted successfully.',
+        invited_email: normalizedEmail,
+        shared_user_id: existing.rows[0].id,
+      });
+    }
 
     const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
     await db.query(
       'INSERT INTO invitations (owner_id, invited_email, status, expires_at) VALUES ($1,$2,$3,$4) ON CONFLICT (owner_id, invited_email) DO UPDATE SET status=$3, expires_at=$4',
-      [owner_id, invited_email, 'pending', expiresAt]
+      [owner_id, normalizedEmail, 'pending', expiresAt]
     );
-    const invitationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?invited_email=${encodeURIComponent(invited_email)}`;
-    await sendInvitationEmail(invited_email, ownerDisplayName, invitationLink);
-    res.status(201).json({ message: 'Invitation sent', invited_email, expires_at: expiresAt });
+    const invitationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?invited_email=${encodeURIComponent(normalizedEmail)}`;
+    await sendInvitationEmail(normalizedEmail, ownerDisplayName, invitationLink);
+    res.status(201).json({ message: 'Invitation sent', invited_email: normalizedEmail, expires_at: expiresAt });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // Get pending invitations
-app.get('/api/my-invitations', authenticateToken, async (req, res) => {
+app.get('/api/my-invitations', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query(
       `SELECT id, invited_email, status, created_at, expires_at, accepted_at 
@@ -530,7 +768,7 @@ app.get('/api/my-invitations', authenticateToken, async (req, res) => {
 });
 
 // Cancel invitation
-app.delete('/api/invitation/:invitationId', authenticateToken, async (req, res) => {
+app.delete('/api/invitation/:invitationId', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const result = await db.query('DELETE FROM invitations WHERE id=$1 AND owner_id=$2', [req.params.invitationId, req.user.id]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Invitation not found' });
@@ -539,7 +777,7 @@ app.delete('/api/invitation/:invitationId', authenticateToken, async (req, res) 
 });
 
 // Get combined access list
-app.get('/api/my-access-list', authenticateToken, async (req, res) => {
+app.get('/api/my-access-list', authenticateToken, requireVaultAccess, async (req, res) => {
   try {
     const active = await db.query(
       `SELECT p.viewer_id as id, u.username, u.email, 'active' as type, p.created_at as date_granted
@@ -552,6 +790,48 @@ app.get('/api/my-access-list', authenticateToken, async (req, res) => {
       [req.user.id]
     );
     res.json([...active.rows, ...pending.rows]);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/account-access/status', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.vault_access !== 'view_only') {
+      return res.json({ vault_access: 'full', request_status: 'approved' });
+    }
+
+    const result = await db.query(
+      'SELECT status, requested_at, reviewed_at, note FROM vault_access_requests WHERE user_id = $1',
+      [req.user.id]
+    );
+
+    res.json({
+      vault_access: req.user.vault_access,
+      request_status: result.rows[0]?.status || 'not_requested',
+      request: result.rows[0] || null,
+    });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/account-access/request', authenticateToken, async (req, res) => {
+  try {
+    if (req.user.vault_access === 'full') {
+      return res.status(400).json({ error: 'Your account already has full vault access.' });
+    }
+
+    const result = await db.query(
+      `INSERT INTO vault_access_requests (user_id, status, requested_at, reviewed_at)
+       VALUES ($1, 'pending', NOW(), NULL)
+       ON CONFLICT (user_id)
+       DO UPDATE SET status = 'pending', requested_at = NOW(), reviewed_at = NULL
+       RETURNING status, requested_at`,
+      [req.user.id]
+    );
+
+    res.status(201).json({
+      message: 'Vault access request submitted.',
+      request_status: result.rows[0].status,
+      requested_at: result.rows[0].requested_at,
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
