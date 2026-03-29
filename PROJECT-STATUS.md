@@ -49,16 +49,13 @@ C:\Users\pheal\code\MBB1\MBB\
 ### Supabase (PostgreSQL)
 - Project ref: ryovrymicbosabnmwgju
 - Region: eu-central-1
-- Connection string (Session Pooler, port 5432):
-  postgresql://postgres.ryovrymicbosabnmwgju:Cm551977%21postgres@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
-- Password: Cm551977!postgres  (the word "postgres" is appended — this is correct)
+- Connection string: see backend/.env (NOT committed to git)
 - Status: WORKING as of 25 March 2026
 
 ### Mailtrap (Email sandbox)
 - Host: sandbox.smtp.mailtrap.io
 - Port: 587
-- User: e9ca4c86644223
-- Password: 9069ce6ebb0ada
+- Credentials: see backend/.env (NOT committed to git)
 - Status: VERIFIED WORKING
 
 ### GitHub
@@ -69,15 +66,18 @@ C:\Users\pheal\code\MBB1\MBB\
 - Last push: 29 March 2026 (evening) — includes media integration (hero video + hero image on Welcome page)
 
 ## .env file (backend/.env)
-DATABASE_URL=postgresql://postgres.ryovrymicbosabnmwgju:Cm551977%21postgres@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
-JWT_SECRET=icoe_jwt_s3cr3t_k3y_2026_change_before_deploy
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_SECURE=false
-EMAIL_USER=icoecontact@gmail.com
-EMAIL_PASSWORD=erqwhqgcallhzbzb
-EMAIL_FROM=ICOE <icoecontact@gmail.com>
-FRONTEND_URL=http://localhost:3000
+⚠️ NEVER commit real credentials. The .env file is gitignored. Keep actual values local only.
+
+Required variables (set in backend/.env — not in git):
+- DATABASE_URL=postgresql://...
+- JWT_SECRET=<random secret — change before deploy>
+- EMAIL_HOST=smtp.gmail.com
+- EMAIL_PORT=587
+- EMAIL_SECURE=false
+- EMAIL_USER=<gmail address>
+- EMAIL_PASSWORD=<gmail app password>
+- EMAIL_FROM=ICOE <<gmail address>>
+- FRONTEND_URL=http://localhost:3000
 # Note: Gmail App Password is used (not normal Gmail password). Label: ICOE
 
 ## How to Start the App
@@ -210,12 +210,11 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 
 ## Notes
 - .env is in .gitignore — never committed
-- The word "postgres" in the password (Cm551977!postgres) is correct — it was 
+- The Supabase DB password has the word "postgres" appended — this is correct (see .env)
   appended when the Supabase password was originally set
 - Old SQLite database was abandoned — Supabase is the only DB now
 - sqlite3 package is still in package.json but not used
-- JWT_SECRET is in backend/.env as `icoe_jwt_s3cr3t_k3y_2026_change_before_deploy`
-  — server.js reads it via process.env.JWT_SECRET
+- JWT_SECRET is in backend/.env — server.js reads it via process.env.JWT_SECRET
 - BACKEND_URL env var is read in server.js for file URLs (defaults to http://localhost:5000)
   — set this to production URL on Railway when deploying
 - Email is now configured for Gmail with App Password (label: ICOE)
