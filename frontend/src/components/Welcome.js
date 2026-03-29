@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './Welcome.css';
 import Icon from './Icons';
 
@@ -29,10 +29,36 @@ const TICKER_ROWS = [
 
 function Welcome({ onGetStarted, onSignIn }) {
   const [hasEntered, setHasEntered] = useState(false);
+  const videoRef = useRef(null);
+
+  const VIDEO_START = 2; // skip first 2 seconds (AI artefacts)
+
+  const handleVideoLoaded = () => {
+    if (videoRef.current) videoRef.current.currentTime = VIDEO_START;
+  };
+
+  const handleVideoEnded = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = VIDEO_START;
+      videoRef.current.play();
+    }
+  };
 
   if (!hasEntered) {
     return (
       <div className="welcome-page home-entry">
+        <video
+          ref={videoRef}
+          className="entry-bg-video"
+          src="/media/hero-video.mp4"
+          autoPlay
+          muted
+          playsInline
+          onLoadedMetadata={handleVideoLoaded}
+          onEnded={handleVideoEnded}
+        />
+        <div className="entry-bg-overlay" />
+        <div className="entry-content">
         <div className="welcome-logo">
           <h1>ICOE</h1>
           <p>In Case of Emergency</p>
@@ -61,6 +87,7 @@ function Welcome({ onGetStarted, onSignIn }) {
         <button className="btn-primary-welcome enter-btn" onClick={() => setHasEntered(true)}>
           Enter
         </button>
+        </div>
       </div>
     );
   }
@@ -98,6 +125,10 @@ function Welcome({ onGetStarted, onSignIn }) {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="welcome-hero-image">
+        <img src="/media/hero-image.png" alt="ICOE — Safe, Secure, Digital" />
       </div>
 
       <div className="welcome-features">

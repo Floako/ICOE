@@ -1,5 +1,5 @@
 # ICOE — Project Status & Continuation Prompt
-*Last updated: 28 March 2026 (evening)*
+*Last updated: 29 March 2026 (evening)*
 
 ---
 
@@ -9,7 +9,7 @@
 I am continuing development of ICOE (In Case of Emergency) — a React + Node.js web app 
 that lets users securely store and share emergency information with trusted contacts.
 
-Here is the full project status as of 28 March 2026 (evening):
+Here is the full project status as of 29 March 2026 (evening):
 
 ## What ICOE is
 A personal emergency information vault. Users store critical records (legal, health, 
@@ -66,7 +66,7 @@ C:\Users\pheal\code\MBB1\MBB\
 - Branch: master
 - Git user: floako / pauljhealymail@gmail.com
 - Credentials cached via Windows Credential Manager
-- Last push: 28 March 2026 (evening) — includes all security hardening + password reset feature
+- Last push: 29 March 2026 (evening) — includes media integration (hero video + hero image on Welcome page)
 
 ## .env file (backend/.env)
 DATABASE_URL=postgresql://postgres.ryovrymicbosabnmwgju:Cm551977%21postgres@aws-1-eu-central-1.pooler.supabase.com:5432/postgres
@@ -169,6 +169,11 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
   - POST /api/auth/reset-password — validates token, updates password_hash, marks token used
   - Auth.js has forgot/reset views wired up; reset link navigates via ?mode=reset&token=...
   - Fixed bug: reset was updating wrong column name (password → password_hash)
+- **Media integration (29 Mar):** AI-generated video and image added to Welcome page
+  - Entry screen: fullscreen looping video background (hero-video.mp4) with dark overlay
+  - Video skips first 2 seconds (AI artefacts) using useRef + onLoadedMetadata/onEnded seek to VIDEO_START=2
+  - Main welcome page: hero image card (hero-image.png — "Safe. Secure. Digital.") above feature cards
+  - Media files in frontend/public/media/ (served as static assets)
 
 ## Known Issues / Pending Work
 - [ ] File viewing: backend must be running for authenticated /uploads route to work (expected for local dev)
@@ -192,7 +197,7 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
   (NOT from the workspace root — .env won't load)
 - CORS allows any localhost/127.0.0.1 origin on any port (regex) + production FRONTEND_URL env var
 - new packages installed: helmet, express-rate-limit (both in backend/package.json)
-- Last GitHub push: 28 March 2026 (evening)
+- Last GitHub push: 29 March 2026 (evening)
 
 ## Next Session Priority Tasks
 1. Test password reset end-to-end: request reset email → click link → set new password → log in
