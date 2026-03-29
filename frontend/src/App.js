@@ -3,6 +3,7 @@ import './App.css';
 import Auth from './components/Auth';
 import Dashboard from './components/Dashboard';
 import Welcome from './components/Welcome';
+import About from './components/About';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -16,6 +17,7 @@ function App() {
   const initialMode = isResetPath && resetToken ? 'reset' : (invitedEmail ? 'register' : 'login');
 
   const [showWelcome, setShowWelcome] = useState(!localStorage.getItem('token') && !invitedEmail && !(isResetPath && resetToken));
+  const [showAbout, setShowAbout] = useState(false);
   const [authMode, setAuthMode] = useState(initialMode);
 
   // Clear session data on app mount if no token
@@ -77,11 +79,21 @@ function App() {
     localStorage.removeItem('user');
   };
 
+  if (showAbout && !token) {
+    return (
+      <About
+        onBack={() => { setShowAbout(false); setShowWelcome(true); }}
+        onGetStarted={() => { setShowAbout(false); setShowWelcome(false); setAuthMode('register'); }}
+      />
+    );
+  }
+
   if (showWelcome && !token) {
     return (
       <Welcome
         onGetStarted={() => { setAuthMode('register'); setShowWelcome(false); }}
         onSignIn={() => { setAuthMode('login'); setShowWelcome(false); }}
+        onAbout={() => { setShowAbout(true); setShowWelcome(false); }}
       />
     );
   }

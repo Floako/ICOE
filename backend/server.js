@@ -451,7 +451,7 @@ app.post('/api/auth/reset-password', authLimiter, async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await db.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedPassword, resetRow.user_id]);
+    await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, resetRow.user_id]);
     await db.query('UPDATE password_resets SET used = true WHERE id = $1', [resetRow.id]);
 
     return res.json({ message: 'Password has been reset successfully' });

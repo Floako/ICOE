@@ -27,7 +27,7 @@ const TICKER_ROWS = [
   ],
 ];
 
-function Welcome({ onGetStarted, onSignIn }) {
+function Welcome({ onGetStarted, onSignIn, onAbout }) {
   const [hasEntered, setHasEntered] = useState(false);
   const videoRef = useRef(null);
 
@@ -87,6 +87,9 @@ function Welcome({ onGetStarted, onSignIn }) {
         <button className="btn-primary-welcome enter-btn" onClick={() => setHasEntered(true)}>
           Enter
         </button>
+        {onAbout && (
+          <button className="btn-about-link" onClick={onAbout}>About ICOE ›</button>
+        )}
         </div>
       </div>
     );
@@ -169,6 +172,9 @@ function Welcome({ onGetStarted, onSignIn }) {
         <button className="btn-secondary-welcome" onClick={onSignIn}>
           Sign In
         </button>
+        {onAbout && (
+          <button className="btn-about-link" onClick={onAbout}>About ICOE ›</button>
+        )}
       </div>
 
       <p className="welcome-footer">

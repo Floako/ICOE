@@ -151,8 +151,25 @@ function ShareData() {
 
   return (
     <div className="share-data">
-      <h3>Share Your Data</h3>
-      <p className="subtitle">Grant access to registered users or invite new ones</p>
+      <div className="share-hero">
+        <video
+          className="share-hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/media/friends-share.mp4" type="video/mp4" />
+        </video>
+        <div className="share-hero-overlay" />
+        <div className="share-hero-content">
+          <h3>Share Your Data</h3>
+          <p>Grant trusted people access to your records</p>
+        </div>
+      </div>
+
+      <div className="share-body">
+      <p className="subtitle">Search by username or email to grant access, or invite someone new</p>
 
       <div className="search-box">
         <input
@@ -250,6 +267,7 @@ function ShareData() {
             ))}
           </div>
         )}
+      </div>
       </div>
     </div>
   );

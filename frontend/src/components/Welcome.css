@@ -154,6 +154,24 @@
   transform: translateY(-1px);
 }
 
+.btn-about-link {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 0;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-about-link:hover {
+  color: rgba(255,255,255,0.95);
+}
+
 .welcome-footer {
   margin-top: 50px;
   font-size: 0.78rem;
