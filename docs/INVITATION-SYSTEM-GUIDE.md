@@ -1,4 +1,4 @@
-# ICOE Invitation System - Testing Guide
+﻿# ICON Invitation System - Testing Guide
 
 ## Overview
 Extended the sharing system with email-based invitations for non-registered users. When you invite someone who doesn't have an account, they automatically get access once they register.

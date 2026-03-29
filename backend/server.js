@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
@@ -32,7 +32,7 @@ const emailConfig = {
   }
 };
 
-const EMAIL_FROM = process.env.EMAIL_FROM || emailConfig.auth.user || 'noreply@icoe.app';
+const EMAIL_FROM = process.env.EMAIL_FROM || emailConfig.auth.user || 'noreply@ICON.app';
 
 const emailTransporter = nodemailer.createTransport(emailConfig);
 
@@ -42,11 +42,11 @@ async function sendInvitationEmail(invitedEmail, ownerUsername, invitationLink) 
     const mailOptions = {
       from: EMAIL_FROM,
       to: invitedEmail,
-      subject: `${ownerUsername} invited you to ICOE - In Case Of Emergency`,
+      subject: `${ownerUsername} invited you to ICON - In Case Of Need`,
       html: `
         <h2>Emergency Access Invitation</h2>
         <p>Hello,</p>
-        <p><strong>${ownerUsername}</strong> has invited you to view their emergency information on ICOE (In Case Of Emergency).</p>
+        <p><strong>${ownerUsername}</strong> has invited you to view their emergency information on ICON (In Case Of Need).</p>
         <p>This is a private app for families to securely share critical information with trusted contacts in emergency situations.</p>
         <p>
           <a href="${invitationLink}" style="display: inline-block; background-color: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
@@ -60,7 +60,7 @@ async function sendInvitationEmail(invitedEmail, ownerUsername, invitationLink) 
           If you didn't expect this invitation or have questions, please contact ${ownerUsername} directly.
         </p>
       `,
-      text: `${ownerUsername} invited you to view their emergency information on ICOE. Visit this link to accept: ${invitationLink}`
+      text: `${ownerUsername} invited you to view their emergency information on ICON. Visit this link to accept: ${invitationLink}`
     };
 
     await emailTransporter.sendMail(mailOptions);
@@ -79,11 +79,11 @@ async function sendPasswordResetEmail(email, username, resetLink) {
     await emailTransporter.sendMail({
       from: EMAIL_FROM,
       to: email,
-      subject: 'ICOE password reset request',
+      subject: 'ICON password reset request',
       html: `
         <h2>Password Reset</h2>
         <p>Hello ${displayName},</p>
-        <p>We received a request to reset your ICOE password.</p>
+        <p>We received a request to reset your ICON password.</p>
         <p>
           <a href="${resetLink}" style="display:inline-block;background-color:#e94560;color:white;padding:12px 24px;text-decoration:none;border-radius:5px;">
             Reset Password
@@ -92,7 +92,7 @@ async function sendPasswordResetEmail(email, username, resetLink) {
         <p>This link expires in 1 hour.</p>
         <p>If you did not request this, you can safely ignore this email.</p>
       `,
-      text: `Reset your ICOE password using this link (valid for 1 hour): ${resetLink}`,
+      text: `Reset your ICON password using this link (valid for 1 hour): ${resetLink}`,
     });
     return true;
   } catch (error) {

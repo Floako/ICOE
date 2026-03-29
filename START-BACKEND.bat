@@ -1,7 +1,7 @@
-@echo off
-REM ICOE Backend Launcher
+﻿@echo off
+REM ICON Backend Launcher
 
 cd /d "%~dp0backend"
-echo Starting ICOE Backend on localhost:5000...
+echo Starting ICON Backend on localhost:5000...
 npm start
 pause

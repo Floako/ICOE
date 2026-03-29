@@ -1,7 +1,7 @@
 {
-  "name": "icoe-frontend",
+  "name": "ICON-frontend",
   "version": "1.0.0",
-  "description": "ICOE Frontend",
+  "description": "ICON Frontend",
   "private": true,
   "dependencies": {
     "react": "^18.2.0",

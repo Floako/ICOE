@@ -1,8 +1,8 @@
-# ICOE Quick Reference Card
+﻿# ICON Quick Reference Card
 
 ## Project at a Glance
 
-**Project:** ICOE (In Case of Emergency - Information Manager)  
+**Project:** ICON (In Case Of Need - Information Manager)  
 **Type:** Full-stack web application  
 **Tech Stack:** React + Node.js/Express + SQLite  
 **Status:** Phase 1 - MVP Complete  
@@ -328,7 +328,7 @@ Then read by role:
 | `backend/server.js` | ~400 | Everything: routes, auth, DB |
 | `frontend/src/App.js` | 30 | Root component |
 | `frontend/src/components/Dashboard.js` | 100 | Main app layout |
-| `backend/icoe.db` | Binary | SQLite database |
+| `backend/ICON.db` | Binary | SQLite database |
 
 ---
 

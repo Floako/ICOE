@@ -60,14 +60,14 @@ function Welcome({ onGetStarted, onSignIn, onAbout }) {
         <div className="entry-bg-overlay" />
         <div className="entry-content">
         <div className="welcome-logo">
-          <h1>ICOE</h1>
-          <p>In Case of Emergency</p>
+          <h1>ICON</h1>
+          <p>In Case Of Need</p>
         </div>
 
         <p className="welcome-tagline">The one place you need when it matters most.</p>
 
         <div className="ticker-section">
-          <p className="ticker-label">What people store in ICOE</p>
+          <p className="ticker-label">What people store in ICON</p>
           <div className="ticker-rows">
             {TICKER_ROWS.map((row, rowIndex) => (
               <div key={rowIndex} className="ticker-row">
@@ -88,7 +88,7 @@ function Welcome({ onGetStarted, onSignIn, onAbout }) {
           Enter
         </button>
         {onAbout && (
-          <button className="btn-about-link" onClick={onAbout}>About ICOE ›</button>
+          <button className="btn-about-link" onClick={onAbout}>About ICON ›</button>
         )}
         </div>
       </div>
@@ -98,22 +98,22 @@ function Welcome({ onGetStarted, onSignIn, onAbout }) {
   return (
     <div className="welcome-page">
       <div className="welcome-logo">
-        <h1>ICOE</h1>
-        <p>In Case of Emergency</p>
+        <h1>ICON</h1>
+        <p>In Case Of Need</p>
       </div>
 
       <p className="welcome-tagline">
         The one place you need when it matters most.
       </p>
       <p className="welcome-sub">
-        ICOE helps you securely store your critical information — legal, financial, medical and more —
+        ICON helps you securely store your critical information — legal, financial, medical and more —
         so you and the people you trust can find exactly what they need, exactly when they need it.
         <br /><br />
         Your data stays under your control. Always.
       </p>
 
       <div className="ticker-section">
-        <p className="ticker-label">What people store in ICOE</p>
+        <p className="ticker-label">What people store in ICON</p>
         <div className="ticker-rows">
           {TICKER_ROWS.map((row, rowIndex) => (
             <div key={rowIndex} className="ticker-row">
@@ -131,7 +131,14 @@ function Welcome({ onGetStarted, onSignIn, onAbout }) {
       </div>
 
       <div className="welcome-hero-image">
-        <img src="/media/hero-image.png" alt="ICOE — Safe, Secure, Digital" />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/media/friends-share.mp4" type="video/mp4" />
+        </video>
       </div>
 
       <div className="welcome-features">
@@ -173,7 +180,7 @@ function Welcome({ onGetStarted, onSignIn, onAbout }) {
           Sign In
         </button>
         {onAbout && (
-          <button className="btn-about-link" onClick={onAbout}>About ICOE ›</button>
+          <button className="btn-about-link" onClick={onAbout}>About ICON ›</button>
         )}
       </div>
 

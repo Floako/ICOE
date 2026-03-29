@@ -1,7 +1,7 @@
-@echo off
-REM ICOE Launch Script for Windows
+﻿@echo off
+REM ICON Launch Script for Windows
 
-echo Starting ICOE (In Case Of Emergency)...
+echo Starting ICON (In Case Of Need)...
 echo.
 
 echo [1/2] Starting Backend Server on Port 5000...
@@ -13,7 +13,7 @@ echo [2/2] Starting Frontend on Port 3000...
 start cmd /k "cd frontend && npm install && npm start"
 
 echo.
-echo ICOE is starting!
+echo ICON is starting!
 echo Backend: http://localhost:5000
 echo Frontend: http://localhost:3000
 echo.

@@ -1,7 +1,7 @@
-{
-  "name": "icoe-backend",
+﻿{
+  "name": "ICON-backend",
   "version": "1.0.0",
-  "description": "ICOE Backend Server",
+  "description": "ICON Backend Server",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

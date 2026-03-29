@@ -1,4 +1,4 @@
-# ICOE — Project Status & Continuation Prompt
+﻿# ICON — Project Status & Continuation Prompt
 *Last updated: 29 March 2026 (evening)*
 
 ---
@@ -6,12 +6,12 @@
 ## COPY THIS ENTIRE BLOCK TO START A NEW SESSION
 
 ```
-I am continuing development of ICOE (In Case of Emergency) — a React + Node.js web app 
+I am continuing development of ICON (In Case Of Need) — a React + Node.js web app 
 that lets users securely store and share emergency information with trusted contacts.
 
 Here is the full project status as of 29 March 2026 (evening):
 
-## What ICOE is
+## What ICON is
 A personal emergency information vault. Users store critical records (legal, health, 
 finance, insurance, etc.) and can share access with family/trusted contacts via email 
 invitation. Think of it as a private digital black box for your life.
@@ -23,7 +23,7 @@ invitation. Think of it as a private digital black box for your life.
 - Auth: JWT + bcryptjs
 - Email: Nodemailer + Mailtrap (sandbox, working)
 - File uploads: Multer
-- GitHub: https://github.com/Floako/ICOE.git (master branch)
+- GitHub: https://github.com/Floako/ICON.git (master branch)
 
 ## Workspace
 C:\Users\pheal\code\MBB1\MBB\
@@ -59,7 +59,7 @@ C:\Users\pheal\code\MBB1\MBB\
 - Status: VERIFIED WORKING
 
 ### GitHub
-- Repo: https://github.com/Floako/ICOE.git
+- Repo: https://github.com/Floako/ICON.git
 - Branch: master
 - Git user: floako / pauljhealymail@gmail.com
 - Credentials cached via Windows Credential Manager
@@ -76,9 +76,9 @@ Required variables (set in backend/.env — not in git):
 - EMAIL_SECURE=false
 - EMAIL_USER=<gmail address>
 - EMAIL_PASSWORD=<gmail app password>
-- EMAIL_FROM=ICOE <<gmail address>>
+- EMAIL_FROM=ICON <<gmail address>>
 - FRONTEND_URL=http://localhost:3000
-# Note: Gmail App Password is used (not normal Gmail password). Label: ICOE
+# Note: Gmail App Password is used (not normal Gmail password). Label: ICON
 
 ## How to Start the App
 1. Backend:  cd backend  then  node server.js
@@ -134,7 +134,7 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - expiry_date (optional DATE, for future AI scanning)
 
 ## Features Completed
-- Welcome landing page with ICOE branding and feature cards
+- Welcome landing page with ICON branding and feature cards
 - Login / Register with dark glass card UI
 - Dashboard with dark sidebar, category icons, item count badges
 - Overview panel on login showing all categories as clickable cards
@@ -153,7 +153,7 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - Logout resets URL params and auth mode
 - Auth form autocomplete attributes set (autoComplete="off" on form, proper values on fields)
 - JWT_SECRET moved to backend/.env (no longer hardcoded in server.js)
-- Email switched from Mailtrap sandbox to Gmail (App Password, label: ICOE)
+- Email switched from Mailtrap sandbox to Gmail (App Password, label: ICON)
 - ManageAccess.js state update filter bugs fixed (revoke/cancel item removal now type-safe)
 - Sidebar moved to far left edge (removed max-width centering from .dashboard-container)
 - **Security hardening (28 Mar):**
@@ -217,7 +217,7 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - JWT_SECRET is in backend/.env — server.js reads it via process.env.JWT_SECRET
 - BACKEND_URL env var is read in server.js for file URLs (defaults to http://localhost:5000)
   — set this to production URL on Railway when deploying
-- Email is now configured for Gmail with App Password (label: ICOE)
+- Email is now configured for Gmail with App Password (label: ICON)
   — Mailtrap sandbox credentials are no longer active in .env
 - `shared_access` in the docs/PROJECT-STATUS refers to the `permissions` table in server.js
   — this is just a naming discrepancy between docs and code (same concept)

@@ -36,8 +36,8 @@ function About({ onBack, onGetStarted }) {
         </video>
         <div className="about-hero-overlay" />
         <div className="about-hero-content">
-          <div className="about-logo">ICOE</div>
-          <h1>In Case of Emergency</h1>
+          <div className="about-logo">ICON</div>
+          <h1>In Case Of Need</h1>
           <p className="about-tagline">Your digital black box. Always ready. Always secure.</p>
         </div>
       </div>
@@ -52,17 +52,17 @@ function About({ onBack, onGetStarted }) {
         </div>
       </div>
 
-      {/* ── What is ICOE ── */}
+      {/* ── What is ICON ── */}
       <section className="about-section">
-        <h2>What is ICOE?</h2>
+        <h2>What is ICON?</h2>
         <p>
-          ICOE is a private, secure vault for the information that matters most. Store
+          ICON is a private, secure vault for the information that matters most. Store
           everything in one place so that you — or someone you trust — can find it
           instantly when it counts.
         </p>
         <p>
           Whether it's a medical emergency, a legal situation, or simply helping a
-          family member manage your affairs, ICOE gives you peace of mind that
+          family member manage your affairs, ICON gives you peace of mind that
           your critical records are always accessible.
         </p>
       </section>
@@ -97,7 +97,7 @@ function About({ onBack, onGetStarted }) {
         <div className="about-feature-card">
           <div className="about-feature-icon">📱</div>
           <h3>Access Anywhere</h3>
-          <p>ICOE runs in your browser on any device. Your information is in the cloud, ready when you need it, from wherever you are.</p>
+          <p>ICON runs in your browser on any device. Your information is in the cloud, ready when you need it, from wherever you are.</p>
         </div>
       </section>
 

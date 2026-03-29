@@ -1,4 +1,4 @@
-I wish for this project MBB ( MyBlackBox) to be an ICE ( In case of Emergency) style app for Family and other close friends to utilise as necessary. 
+﻿I wish for this project MBB ( MyBlackBox) to be an ICE ( In Case Of Need) style app for Family and other close friends to utilise as necessary. 
 
 It should provide a web based autheticated front end that when accessed, allows users to upload and view information on areas such as 
 

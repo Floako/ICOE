@@ -1,4 +1,4 @@
-// Icons.js — Minimalist stroke-based SVG icons for ICOE
+// Icons.js — Minimalist stroke-based SVG icons for ICON
 // All icons are 24×24 viewBox, stroke-only (fill:none), strokeLinecap/Join:round
 import React from 'react';
 

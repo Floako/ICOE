@@ -233,7 +233,8 @@
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--card-border);
 }
 
-.welcome-hero-image img {
+.welcome-hero-image img,
+.welcome-hero-image video {
   width: 100%;
   display: block;
   border-radius: 16px;

@@ -643,7 +643,7 @@ function Dashboard({ user, token, onLogout }) {
           <h2>{statusLabel}</h2>
           <p>
             This account can currently view data shared with you, but cannot create or manage a personal vault yet.
-            If you want your own private data store inside ICOE, submit a request below.
+            If you want your own private data store inside ICON, submit a request below.
           </p>
 
           {accessRequestMessage && <div className="access-panel-message">{accessRequestMessage}</div>}
@@ -670,7 +670,7 @@ function Dashboard({ user, token, onLogout }) {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>ICOE</h1>
+        <h1>ICON</h1>
         <div className="header-right">
           <div className="header-user">
             <div className="user-avatar">{user.username ? user.username[0].toUpperCase() : 'U'}</div>

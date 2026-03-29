@@ -1,8 +1,8 @@
-# ICOE - In Case of Emergency Information Manager
+﻿# ICON - In Case Of Need Information Manager
 
 ## About This Project
 
-ICOE is an **In Case of Emergency** application designed for families and close friends to securely store and retrieve critical information during emergencies.
+ICON is an **In Case Of Need** application designed for families and close friends to securely store and retrieve critical information during emergencies.
 
 ### Categories Supported
 

@@ -1,4 +1,4 @@
-# ICOE Frontend Components
+﻿# ICON Frontend Components
 
 ## Component Architecture
 

@@ -189,10 +189,10 @@ function Auth({ onLoginSuccess, onClearSavedSession, initialMode, invitedEmail =
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>ICOE</h1>
+        <h1>ICON</h1>
         <p className="subtitle">
           {isLogin
-            ? 'In Case Of Emergency - Information Manager'
+            ? 'In Case Of Need - Information Manager'
             : isRegister
               ? 'Create an account with your name, email and password'
               : isForgot

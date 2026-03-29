@@ -1,6 +1,6 @@
-# Email Configuration for ICOE
+﻿# Email Configuration for ICON
 
-The ICOE application now sends invitation emails when you invite someone to view your emergency information. To enable this feature, you need to configure email settings.
+The ICON application now sends invitation emails when you invite someone to view your emergency information. To enable this feature, you need to configure email settings.
 
 ## Setup Options
 
@@ -116,7 +116,7 @@ Once configured:
 The invitation email includes:
 
 - Sender's name (the person who invited them)
-- Explanation of ICOE (In Case Of Emergency)
+- Explanation of ICON (In Case Of Need)
 - A prominent "Accept Invitation" button
 - 48-hour expiration notice
 - Instructions to contact sender if unexpected

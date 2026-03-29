@@ -1,7 +1,7 @@
-# ICOE Data Sharing System - Testing Guide
+﻿# ICON Data Sharing System - Testing Guide
 
 ## Overview
-The sharing system allows ICOE users to nominate trusted contacts to view their emergency information. Viewers get full read-only access to all shared owner's data.
+The sharing system allows ICON users to nominate trusted contacts to view their emergency information. Viewers get full read-only access to all shared owner's data.
 
 ## Features Implemented
 
@@ -50,7 +50,7 @@ The sharing system allows ICOE users to nominate trusted contacts to view their 
 ## Testing Scenarios
 
 ### Scenario 1: Basic Sharing
-1. **User A:** Register/login to ICOE
+1. **User A:** Register/login to ICON
 2. **User A:** Create categories (Legal, Health, Finance, etc.)
 3. **User A:** Add items to categories with details and files
 4. **User A:** Go to "Share Data" tab
@@ -60,7 +60,7 @@ The sharing system allows ICOE users to nominate trusted contacts to view their 
 8. **Verify (User A):** Go to "Manage Access" → User B is listed
 
 ### Scenario 2: Viewing Shared Data
-1. **User B:** Login to ICOE
+1. **User B:** Login to ICON
 2. **User B:** Go to "Shared With Me" tab
 3. **Verify:** User A appears in the list
 4. **User B:** Click "+" to expand User A

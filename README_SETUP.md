@@ -1,9 +1,9 @@
-# ICOE - Phase 1 Prototype Setup
+﻿# ICON - Phase 1 Prototype Setup
 
 ## Project Structure
 
 ```
-ICOE/
+ICON/
 ├── backend/           # Node.js/Express server
 │   ├── server.js      # Main API server
 │   ├── package.json   # Dependencies
@@ -67,7 +67,7 @@ Frontend will run on: **http://localhost:3000** (automatically opens in browser)
 
 ✅ **Local Database**
 - SQLite database (no external DB setup needed)
-- All data stored locally in `backend/icoe.db`
+- All data stored locally in `backend/ICON.db`
 
 ---
 
@@ -83,7 +83,7 @@ Use these to test the app after logging in for the first time:
 
 ## Database
 
-SQLite database automatically created at: `backend/icoe.db`
+SQLite database automatically created at: `backend/ICON.db`
 
 ### Tables:
 - **users** - User accounts

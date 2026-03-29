@@ -1,10 +1,10 @@
-# ICOE User Flows & Workflows
+﻿# ICON User Flows & Workflows
 
 ## User Journey Diagram
 
 ```mermaid
 userJourney
-    title ICOE User Journey - Emergency Info Setup
+    title ICON User Journey - Emergency Info Setup
 
     section Discovery
       Understand Purpose: 5: user
@@ -203,7 +203,7 @@ flowchart TD
 ```mermaid
 flowchart TD
     A["Emergency - Need Info"] --> B["User Has Password"]
-    B --> C["Visit ICOE"]
+    B --> C["Visit ICON"]
     C --> D["Login with Credentials"]
     D --> E["Navigate to Category"]
     E --> F["View Item Details"]
@@ -435,7 +435,7 @@ flowchart TD
 ```
 1. Family member needs access
 2. Goes to hospital/doctor
-3. Provides ICOE credentials
+3. Provides ICON credentials
 4. Hospital staff logs in
 5. Navigates to HEALTH category
 6. Downloads current medications list

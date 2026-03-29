@@ -1,6 +1,6 @@
-# ICOE Documentation Index
+﻿# ICON Documentation Index
 
-Complete documentation for the ICOE (In Case Of Emergency) project. Start here to find what you need.
+Complete documentation for the ICON (In Case Of Need) project. Start here to find what you need.
 
 ## Quick Navigation
 

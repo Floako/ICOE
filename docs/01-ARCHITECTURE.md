@@ -1,8 +1,8 @@
-# ICOE Architecture
+﻿# ICON Architecture
 
 ## System Overview
 
-ICOE (In Case Of Emergency) is a **3-tier web application** designed for family emergency information management with a focus on personal reassurance, security, simplicity, and local-first data storage.
+ICON (In Case Of Need) is a **3-tier web application** designed for family emergency information management with a focus on personal reassurance, security, simplicity, and local-first data storage.
 
 ### Architecture Diagram
 
