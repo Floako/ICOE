@@ -1,5 +1,5 @@
 ﻿# ICON — Project Status & Continuation Prompt
-*Last updated: 29 March 2026 (evening)*
+*Last updated: 29 March 2026 (late evening)*
 
 ---
 
@@ -9,7 +9,20 @@
 I am continuing development of ICON (In Case Of Need) — a React + Node.js web app 
 that lets users securely store and share emergency information with trusted contacts.
 
-Here is the full project status as of 29 March 2026 (evening):
+Here is the full project status as of 29 March 2026 (late evening):
+
+## ⚠️ CURRENT BLOCKER — READ FIRST
+The Supabase connection pooler (Supavisor) circuit breaker is open due to repeated 
+failed connection attempts during a DB password rotation earlier today. 
+
+- The DB itself is HEALTHY (confirmed via Supabase SQL Editor)
+- The password in backend/.env is correct
+- The circuit breaker resets automatically — just needs time with NO connection attempts
+- Do NOT restart the backend repeatedly — each failed attempt extends the cooldown
+- When you return after 24 hours, simply run `node server.js` ONCE and it should connect
+
+If it still fails after 24 hours, go to Supabase dashboard → Database → Reset database 
+password → set ONE new password → update backend/.env DATABASE_URL → try once.
 
 ## What ICON is
 A personal emergency information vault. Users store critical records (legal, health, 
@@ -21,9 +34,9 @@ invitation. Think of it as a private digital black box for your life.
 - Backend: Node.js + Express, port 5000
 - Database: PostgreSQL via Supabase (cloud)
 - Auth: JWT + bcryptjs
-- Email: Nodemailer + Mailtrap (sandbox, working)
+- Email: Nodemailer + Gmail (App Password)
 - File uploads: Multer
-- GitHub: https://github.com/Floako/ICON.git (master branch)
+- GitHub: https://github.com/Floako/ICOE.git (ui-redesign branch — active)
 
 ## Workspace
 C:\Users\pheal\code\MBB1\MBB\
@@ -49,23 +62,45 @@ C:\Users\pheal\code\MBB1\MBB\
 ### Supabase (PostgreSQL)
 - Project ref: ryovrymicbosabnmwgju
 - Region: eu-central-1
+- Connection: transaction pooler, port 6543 (NOT 5432 — direct host not available for this region)
 - Connection string: see backend/.env (NOT committed to git)
-- Status: WORKING as of 25 March 2026
+- Status: DB healthy, pooler circuit breaker open (see blocker note at top)
+- Password was rotated 29 March 2026 — value is in backend/.env
 
-### Mailtrap (Email sandbox)
-- Host: sandbox.smtp.mailtrap.io
-- Port: 587
+### Email (Gmail)
+- Provider: Gmail + App Password
 - Credentials: see backend/.env (NOT committed to git)
-- Status: VERIFIED WORKING
+- App password label: ICOE (Gmail account label — do not rename)
+- Status: Working (app password rotated 29 March 2026)
 
-### GitHub
-- Repo: https://github.com/Floako/ICON.git
-- Branch: master
+### Git
+- Active branch: ui-redesign (last commit: a99f402)
+- master branch: e1d7d4f (stable baseline)
+- Latest push: 29 March 2026 — "feat: rename ICOE->ICON in UI, add media videos, update docs"
 - Git user: floako / pauljhealymail@gmail.com
 - Credentials cached via Windows Credential Manager
-- Last push: 29 March 2026 (evening) — includes media integration (hero video + hero image on Welcome page)
 
-## .env file (backend/.env)
+## Workspace
+C:\Users\pheal\code\MBB1\MBB\
+  backend/
+    server.js       — Express API, fully migrated to PostgreSQL (pg package)
+    package.json
+    .env            — secrets (not in git)
+    uploads/        — file upload storage
+  frontend/
+    public/
+      media/        — hero-video.mp4, about-video.mp4, friends-share.mp4, hero-image.png
+    src/
+      App.js        — root, controls Welcome/Auth/Dashboard routing
+      index.css     — global design tokens and resets
+      components/
+        Welcome.js / Welcome.css   — landing page (dark theme, red accent)
+        About.js / About.css       — about page with video hero
+        Auth.js / Auth.css         — login/register (dark glass card)
+        Dashboard.js / Dashboard.css — main app shell
+        CategoryList.js / CategoryList.css — record list + add form
+        ItemDetail.js / ItemDetail.css     — record detail view
+        ShareData.js, ManageAccess.js, SharedWithMe.js, PendingInvites.js
 ⚠️ NEVER commit real credentials. The .env file is gitignored. Keep actual values local only.
 
 Required variables (set in backend/.env — not in git):
@@ -169,11 +204,14 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
   - POST /api/auth/reset-password — validates token, updates password_hash, marks token used
   - Auth.js has forgot/reset views wired up; reset link navigates via ?mode=reset&token=...
   - Fixed bug: reset was updating wrong column name (password → password_hash)
-- **Media integration (29 Mar):** AI-generated video and image added to Welcome page
-  - Entry screen: fullscreen looping video background (hero-video.mp4) with dark overlay
-  - Video skips first 2 seconds (AI artefacts) using useRef + onLoadedMetadata/onEnded seek to VIDEO_START=2
-  - Main welcome page: hero image card (hero-image.png — "Safe. Secure. Digital.") above feature cards
-  - Media files in frontend/public/media/ (served as static assets)
+- **ICON rename (29 Mar):** All user-visible UI text changed from ICOE to ICON
+  - Backend code, email config, .env keys, and docs deliberately left as ICOE (email account names etc.)
+  - Files updated: Welcome.js, About.js, Auth.js, Dashboard.js, Icons.js, index.html
+- **Media integration (29 Mar):** Videos added to Welcome and About pages
+  - Entry screen: fullscreen looping hero-video.mp4 background (skips first 2s via useRef seek)
+  - Welcome page (after Enter): friends-share.mp4 inline autoplay card (replaced static hero-image.png)
+  - About page: about-video.mp4 fullscreen hero with overlay
+  - All media in frontend/public/media/ — hero-video.mp4, about-video.mp4, friends-share.mp4, hero-image.png
 
 ## Known Issues / Pending Work
 - [ ] File viewing: backend must be running for authenticated /uploads route to work (expected for local dev)
@@ -200,13 +238,17 @@ TRANSPORT 🚗, TRAVEL ✈️, TICKETS & EVENTS 🎟️
 - Last GitHub push: 29 March 2026 (evening)
 
 ## Next Session Priority Tasks
-1. Test password reset end-to-end: request reset email → click link → set new password → log in
-2. Test file upload + viewing end-to-end (upload image to record, click link, confirm opens in new tab)
-3. Test Start Date / Expiry Date fields (add record with dates, view detail, edit and save)
-4. Test sharing flow end-to-end with two accounts (invite → register → view shared data)
-5. Deploy to Railway (backend) + Netlify or Railway (frontend)
-6. Set production environment variables on Railway (DATABASE_URL, JWT_SECRET, BACKEND_URL, FRONTEND_URL, EMAIL_*)
-7. Investigate and fix Save Entry timeout (POST /api/categories/:id/items hangs >10s occasionally)
+1. **FIRST: Test backend connection** — run `node server.js` once from backend/ folder
+   - Should print: "Connected to PostgreSQL and tables ready" then "Server running on http://localhost:5000"
+   - If still "Circuit breaker open": go to Supabase → Database → Reset password → update .env → try once
+   - Do NOT run it repeatedly if it fails — wait and try again
+2. Start frontend: cd frontend → npm start → open http://localhost:3000
+3. Test full login flow once backend is up
+4. Test password reset end-to-end (forgot password → email link → new password → login)
+5. Test file upload + viewing (upload image to record, confirm it opens)
+6. Test sharing flow end-to-end with two accounts
+7. Deploy to Railway (backend) + Netlify or Railway (frontend)
+8. UI redesign — further visual improvements on ui-redesign branch
 
 ## Notes
 - .env is in .gitignore — never committed
