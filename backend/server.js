@@ -42,25 +42,176 @@ async function sendInvitationEmail(invitedEmail, ownerUsername, invitationLink) 
     const mailOptions = {
       from: EMAIL_FROM,
       to: invitedEmail,
-      subject: `${ownerUsername} invited you to ICON - In Case Of Need`,
+      subject: `${ownerUsername} has shared their ICON vault with you`,
       html: `
-        <h2>Emergency Access Invitation</h2>
-        <p>Hello,</p>
-        <p><strong>${ownerUsername}</strong> has invited you to view their emergency information on ICON (In Case Of Need).</p>
-        <p>This is a private app for families to securely share critical information with trusted contacts in emergency situations.</p>
-        <p>
-          <a href="${invitationLink}" style="display: inline-block; background-color: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
-            Accept Invitation
-          </a>
-        </p>
-        <p>This invitation will expire in 48 hours.</p>
-        <p><strong>Important:</strong> This link is only valid for 48 hours. If you don't use it, please ask ${ownerUsername} to send you a new invitation.</p>
-        <hr>
-        <p style="color: #666; font-size: 12px;">
-          If you didn't expect this invitation or have questions, please contact ${ownerUsername} directly.
-        </p>
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f0f2f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f2f7;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.12);">
+
+        <!-- ── Header ── -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:40px 40px 0 40px;text-align:center;">
+            <p style="margin:0 0 4px 0;font-size:42px;font-weight:900;letter-spacing:8px;color:#e94560;text-shadow:0 0 20px rgba(233,69,96,0.4);">ICON</p>
+            <p style="margin:0 0 28px 0;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#8892b0;">In Case Of Need</p>
+          </td>
+        </tr>
+
+        <!-- ── Hero Image ── -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:0 40px 40px 40px;">
+            <img src="https://raw.githubusercontent.com/Floako/ICOE/ui-redesign/frontend/public/media/hero-image.png"
+                 alt="ICON — Safe, Secure, Digital"
+                 width="520" style="width:100%;max-width:520px;display:block;border-radius:12px;border:1px solid rgba(255,255,255,0.1);" />
+          </td>
+        </tr>
+
+        <!-- ── Invitation message ── -->
+        <tr>
+          <td style="background:#ffffff;padding:40px 40px 32px 40px;text-align:center;">
+            <p style="margin:0 0 8px 0;font-size:22px;font-weight:700;color:#1a1a2e;">You've been invited</p>
+            <p style="margin:0 0 24px 0;font-size:16px;color:#4a5568;line-height:1.6;">
+              <strong style="color:#1a1a2e;">${ownerUsername}</strong> has shared their private information vault with you.<br>
+              They trust you to have access when it matters most.
+            </p>
+            <a href="${invitationLink}"
+               style="display:inline-block;background-color:#e94560;color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;letter-spacing:0.5px;margin-bottom:16px;">
+              Accept Invitation →
+            </a>
+            <p style="margin:16px 0 0 0;font-size:13px;color:#a0aec0;">This invitation expires in 48 hours.</p>
+          </td>
+        </tr>
+
+        <!-- ── Divider ── -->
+        <tr><td style="background:#ffffff;padding:0 40px;"><hr style="border:none;border-top:1px solid #e2e8f0;margin:0;"></td></tr>
+
+        <!-- ── What is ICON ── -->
+        <tr>
+          <td style="background:#ffffff;padding:32px 40px;text-align:center;">
+            <p style="margin:0 0 8px 0;font-size:18px;font-weight:700;color:#1a1a2e;">What is ICON?</p>
+            <p style="margin:0;font-size:15px;color:#4a5568;line-height:1.7;max-width:460px;display:inline-block;">
+              ICON is a private, secure vault where people store the critical information their loved ones
+              might need in a hurry — medical records, insurance policies, bank details, legal documents,
+              emergency contacts and much more. When ${ownerUsername} shares their vault with you,
+              you get read-only access to everything they've chosen to store — available instantly, from any device.
+            </p>
+          </td>
+        </tr>
+
+        <!-- ── Features ── -->
+        <tr>
+          <td style="background:#f7f8fc;padding:32px 40px;">
+            <p style="margin:0 0 20px 0;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#8892b0;text-align:center;">What you'll have access to</p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="50%" style="padding:0 8px 16px 0;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">⚖️</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Legal</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Wills, power of attorney, solicitor contacts and key documents.</td></tr>
+                  </table>
+                </td>
+                <td width="50%" style="padding:0 0 16px 8px;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">🏥</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Health</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Blood type, allergies, medications, GP and hospital details.</td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td width="50%" style="padding:0 8px 16px 0;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">💰</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Finance</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Bank accounts, pension details, investments and financial contacts.</td></tr>
+                  </table>
+                </td>
+                <td width="50%" style="padding:0 0 16px 8px;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">🛡️</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Insurance</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Life, health, home and vehicle policies with renewal dates.</td></tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td width="50%" style="padding:0 8px 0 0;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">🏠</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Property & Services</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Utility accounts, landlord/agent contacts, home maintenance records.</td></tr>
+                  </table>
+                </td>
+                <td width="50%" style="padding:0 0 0 8px;vertical-align:top;">
+                  <table cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:10px;border:1px solid #e2e8f0;padding:18px;width:100%;">
+                    <tr><td style="font-size:24px;padding-bottom:8px;">✈️</td></tr>
+                    <tr><td style="font-size:14px;font-weight:700;color:#1a1a2e;padding-bottom:4px;">Travel & More</td></tr>
+                    <tr><td style="font-size:13px;color:#718096;line-height:1.5;">Passport details, travel insurance, frequent flyer numbers and tickets.</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── How it works ── -->
+        <tr>
+          <td style="background:#ffffff;padding:32px 40px;text-align:center;">
+            <p style="margin:0 0 20px 0;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#8892b0;">How to get started</p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="text-align:center;padding:0 12px 0 0;vertical-align:top;width:33%;">
+                  <div style="width:40px;height:40px;background:#e94560;border-radius:50%;display:inline-block;line-height:40px;color:#fff;font-weight:900;font-size:18px;margin-bottom:10px;">1</div>
+                  <p style="margin:0;font-size:13px;color:#4a5568;line-height:1.5;"><strong>Click Accept</strong><br>Use the button above to create your free ICON account (takes under a minute).</p>
+                </td>
+                <td style="text-align:center;padding:0 6px;vertical-align:top;width:33%;">
+                  <div style="width:40px;height:40px;background:#e94560;border-radius:50%;display:inline-block;line-height:40px;color:#fff;font-weight:900;font-size:18px;margin-bottom:10px;">2</div>
+                  <p style="margin:0;font-size:13px;color:#4a5568;line-height:1.5;"><strong>Access the vault</strong><br>${ownerUsername}'s shared information will be waiting for you in your dashboard.</p>
+                </td>
+                <td style="text-align:center;padding:0 0 0 12px;vertical-align:top;width:33%;">
+                  <div style="width:40px;height:40px;background:#e94560;border-radius:50%;display:inline-block;line-height:40px;color:#fff;font-weight:900;font-size:18px;margin-bottom:10px;">3</div>
+                  <p style="margin:0;font-size:13px;color:#4a5568;line-height:1.5;"><strong>Your own vault</strong><br>Create your own ICON and invite the people you trust most.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ── CTA repeat ── -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%);padding:36px 40px;text-align:center;">
+            <p style="margin:0 0 6px 0;font-size:16px;color:#ccd6f6;font-weight:600;">Ready to accept ${ownerUsername}'s invitation?</p>
+            <p style="margin:0 0 24px 0;font-size:13px;color:#8892b0;">Your access is waiting — no subscription or payment required.</p>
+            <a href="${invitationLink}"
+               style="display:inline-block;background-color:#e94560;color:#ffffff;padding:16px 40px;text-decoration:none;border-radius:8px;font-size:16px;font-weight:700;letter-spacing:0.5px;">
+              Accept &amp; Create Account →
+            </a>
+          </td>
+        </tr>
+
+        <!-- ── Footer ── -->
+        <tr>
+          <td style="background:#f7f8fc;padding:24px 40px;text-align:center;border-top:1px solid #e2e8f0;">
+            <p style="margin:0 0 6px 0;font-size:12px;color:#a0aec0;">
+              You received this because ${ownerUsername} invited you to view their ICON vault.
+            </p>
+            <p style="margin:0;font-size:12px;color:#a0aec0;">
+              If you didn't expect this, you can safely ignore it. Your information is never shared without your permission.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
       `,
-      text: `${ownerUsername} invited you to view their emergency information on ICON. Visit this link to accept: ${invitationLink}`
+      text: `${ownerUsername} has shared their ICON vault with you.\n\nICON (In Case Of Need) is a private, secure vault for critical information — legal, health, finance, insurance and more.\n\nAccept your invitation here: ${invitationLink}\n\nThis invitation expires in 48 hours.`
     };
 
     await emailTransporter.sendMail(mailOptions);
